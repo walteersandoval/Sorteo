@@ -105,8 +105,8 @@
             background-image: url('https://proof.builderall.com/user_data/icons/9oIFU6ZzftIXXgU.png');
             background-size: contain;
             background-repeat: no-repeat;
-            height: 50px;
-            width: 50px;
+            height: 70px;
+            width: 70px;
             margin-bottom: 15px;
             display: flex;
             justify-content: center;
@@ -687,6 +687,27 @@
             font-size: 0.9em;
             color: #555;
         }
+
+        /* Botón para iniciar un nuevo sorteo */
+        .new-giveaway-button {
+    background: #f3f3f3;
+    /* color: white; */
+    /* padding: 10px 20px; */
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    /* font-size: 1em; */
+    /* cursor: pointer; */
+    /* transition: background-color 0.3s ease; */
+}
+
+        .new-giveaway-button:hover {
+            background-color: ##f3f3f3;
+        }
+
+        .new-giveaway-button.hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -701,7 +722,7 @@
     <div class="bubble" style="top: 40%; left: 70%; width: 80px; height: 80px;"></div>
     <div class="bubble" style="top: 80%; left: 30%; width: 50px; height: 50px;"></div>
 
-    <!-- Contenedor de Confeti (Detrás del Giveaway Container) -->
+    <!-- Contenedor de Confetti (Detrás del Giveaway Container) -->
     <div class="confetti-container" id="confetti-container"></div>
 
     <!-- Indicador de carga -->
@@ -713,7 +734,8 @@
     <div class="giveaway-container" id="initial-screen">
         <div class="badge" id="badge">Preparado</div>
         <div class="giveaway-logo"></div>
-<h1>Acryl Nagels Giveaways</h1>        <div class="separator"></div>
+        <h1>Acryl Nagels - Giveaways</h1>
+        <div class="separator"></div>
         <div class="description" id="description">
             ¡Bienvenido al sorteo de Acryl Nagels! Participa para tener la oportunidad de ganar increíbles premios exclusivos.
             Para participar, simplemente regístrate con tu nombre y correo electrónico. El sorteo finalizará pronto, ¡así que no pierdas la oportunidad!
@@ -776,6 +798,8 @@
             <p id="sorteo-finalizado" style="font-weight: bold;"></p>
             <p><strong>SORTEO ZONA HORARIA:</strong> EST &nbsp;&nbsp; <strong>OFRECIDO POR:</strong> WOOKCOM</p>
         </div>
+        <!-- Botón para iniciar un nuevo sorteo -->
+        <button class="new-giveaway-button hidden" id="new-giveaway-button">Iniciar Nuevo Sorteo</button>
     </div>
 
     <!-- Modal de opciones -->
@@ -1012,6 +1036,12 @@
                     // Generar confeti
                     generateConfetti();
 
+                    // Mostrar el botón para iniciar un nuevo sorteo
+                    const newGiveawayButton = document.getElementById('new-giveaway-button');
+                    if (newGiveawayButton) {
+                        newGiveawayButton.classList.remove('hidden');
+                    }
+
                 }, 10000);
             }
 
@@ -1123,7 +1153,7 @@
 
                 // Event listener para cerrar el modal de participantes
                 document.getElementById('close-participants-modal').addEventListener('click', function () {
-                    console.log('Botón de cerrar modal de participantes clickeado');
+                    console.log('Cerrar modal de participantes clickeado');
                     participantsModal.classList.remove('show');
                     participantsModal.setAttribute('aria-hidden', 'true');
                 });
@@ -1586,8 +1616,82 @@
             if (savedRules) {
                 document.getElementById('rules').innerHTML = `<strong>Reglas del Sorteo:</strong> <ul>${savedRules.split('\n').map(rule => `<li>${rule}</li>`).join('')}</ul>`;
             }
+
+            // Event listener para iniciar un nuevo sorteo
+            const newGiveawayButton = document.getElementById('new-giveaway-button');
+            if (newGiveawayButton) {
+                newGiveawayButton.addEventListener('click', function () {
+                    console.log('Botón de iniciar nuevo sorteo clickeado');
+
+                    // Ocultar el botón de nuevo sorteo
+                    newGiveawayButton.classList.add('hidden');
+
+                    // Ocultar la sección del ganador y footer
+                    const winnerContainer = document.getElementById('winner-container');
+                    if (winnerContainer) {
+                        winnerContainer.style.visibility = 'hidden';
+                        document.getElementById('winner').innerText = '';
+                    }
+
+                    const sorteoFinalizado = document.getElementById('sorteo-finalizado');
+                    const giveawayStatus = document.getElementById('giveaway-status');
+                    if (sorteoFinalizado) {
+                        sorteoFinalizado.innerText = '';
+                    }
+                    if (giveawayStatus) {
+                        giveawayStatus.innerText = 'El sorteo está en proceso!';
+                    }
+
+                    const footerDetails = document.querySelector('.footer-details');
+                    if (footerDetails) {
+                        footerDetails.style.visibility = 'hidden';
+                    }
+
+                    // Resetear el badge
+                    const badge = document.getElementById('badge');
+                    if (badge) {
+                        badge.innerText = 'Preparado';
+                        badge.style.backgroundColor = '#b07df4';
+                    }
+
+                    const badgeFinal = document.getElementById('badge-final');
+                    if (badgeFinal) {
+                        badgeFinal.innerText = 'Preparado';
+                        badgeFinal.style.backgroundColor = '#b07df4';
+                    }
+
+                    // Mostrar la pantalla inicial nuevamente
+                    const initialScreen = document.getElementById('initial-screen');
+                    const giveawayScreen = document.getElementById('giveaway-screen');
+                    if (initialScreen && giveawayScreen) {
+                        giveawayScreen.style.display = 'none';
+                        initialScreen.style.display = 'flex';
+                    }
+
+                    // Limpiar confeti
+                    const confettiContainer = document.getElementById('confetti-container');
+                    if (confettiContainer) {
+                        confettiContainer.innerHTML = '';
+                    }
+
+                    // Resetear cualquier contador
+                    if (countdownInterval) {
+                        clearInterval(countdownInterval);
+                        countdownInterval = null;
+                    }
+
+                    // Resetear la configuración del contador
+                    localStorage.removeItem('countdownEnabled');
+                    localStorage.removeItem('countdownEndTime');
+                    enableCountdownSelect.value = 'false';
+                    countdownSettings.style.display = 'none';
+                    document.getElementById('countdown').style.display = 'none';
+                });
+            }
+
         });
     </script>
 </body>
 
 </html>
+
