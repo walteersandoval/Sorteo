@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         /* =========================
-                   CSS: Minimalista y Bien Ordenado
+                   CSS: Minimalista y Mejorado
         ========================= */
 
         /* General Styles */
@@ -31,7 +31,7 @@
             flex-wrap: nowrap;
             position: relative;
             overflow: hidden;
-            width: 98%;
+            width: 100%;
         }
 
         *,
@@ -90,8 +90,8 @@
             justify-content: center;
             position: relative;
             transition: opacity 0.5s ease, transform 0.5s ease;
-            /*backdrop-filter: blur(10px);*/
-            z-index: 150;
+            backdrop-filter: blur(10px);
+            z-index: 200; /* Mayor que el contenedor de confeti */
         }
 
         .giveaway-container.hidden {
@@ -233,7 +233,7 @@
             position: fixed;
             bottom: 15px;
             right: 15px;
-            z-index: 1000;
+            z-index: 300; /* Mayor que el contenedor de confeti */
             margin-top: 15px;
         }
 
@@ -257,7 +257,7 @@
             position: fixed;
             top: 10px;
             right: 20px;
-            z-index: 1100;
+            z-index: 300; /* Mayor que el contenedor de confeti */
             margin-top: 15px;
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
@@ -409,6 +409,85 @@
             color: #666;
             visibility: hidden;
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.05);
+            position: relative; /* Para posicionar el confeti */
+        }
+
+        /* Confetti Container */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Para que no interfiera con otros elementos */
+            overflow: hidden;
+            z-index: 100; /* Debajo del giveaway-container */
+        }
+
+        /* Confetti Piece */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: transparent;
+            pointer-events: auto; /* Para detectar el hover */
+            animation: fall 5s linear infinite;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Formas de Confeti */
+        .confetti-piece.circle {
+            border-radius: 50%;
+        }
+
+        .confetti-piece.triangle {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 10px solid currentColor;
+            background-color: transparent;
+        }
+
+        .confetti-piece.rectangle {
+            /* Ya está definido como cuadrado, puede permanecer así o ajustar */
+        }
+
+        /* Animación de caída */
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg) translateX(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Animación al ser golpeado */
+        @keyframes hit {
+            0% {
+                transform: translateY(0) rotate(0deg) translateX(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-50px) rotate(720deg) translateX(-50px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0) rotate(1080deg) translateX(0);
+                opacity: 0;
+            }
+        }
+
+        .confetti-piece.hit {
+            animation: hit 1s forwards;
+            background-color: transparent !important; /* Para evitar cambios de color durante la animación */
         }
 
         /* Powered By */
@@ -444,17 +523,6 @@
             100% {
                 transform: translateY(-100%);
             }
-        }
-
-        /* Confetti */
-        .confetti {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
         }
 
         /* Modal */
@@ -586,6 +654,9 @@
     <div class="bubble" style="top: 40%; left: 70%; width: 80px; height: 80px;"></div>
     <div class="bubble" style="top: 80%; left: 30%; width: 50px; height: 50px;"></div>
 
+    <!-- Contenedor de Confeti (Detrás del Giveaway Container) -->
+    <div class="confetti-container" id="confetti-container"></div>
+
     <!-- Indicador de carga -->
     <div class="loading-indicator" id="loading-indicator" style="display: none;">
         <div class="loading-bar"></div>
@@ -679,6 +750,22 @@
             });
             localStorage.setItem('participants', JSON.stringify(uniqueParticipants));
             console.log('Participantes únicos:', uniqueParticipants);
+
+            // Función para generar colores aleatorios
+            function getRandomColor() {
+                const letters = '0123456789ABCDEF';
+                let color = '#';
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            // Función para generar formas aleatorias
+            function getRandomShape() {
+                const shapes = ['circle', 'triangle', 'rectangle'];
+                return shapes[Math.floor(Math.random() * shapes.length)];
+            }
 
             // Función para iniciar el sorteo
             function initiateGiveaway() {
@@ -774,7 +861,62 @@
                     if (spinnerContainer) {
                         spinnerContainer.style.display = 'none';
                     }
+
+                    // Generar confeti
+                    generateConfetti();
+
                 }, 10000);
+            }
+
+            // Función para generar confeti
+            function generateConfetti() {
+                const confettiContainer = document.getElementById('confetti-container');
+                if (!confettiContainer) {
+                    console.error('No se encontró el contenedor de confeti.');
+                    return;
+                }
+
+                const numberOfConfetti = 150; // Aumentado para mayor realismo
+
+                for (let i = 0; i < numberOfConfetti; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti-piece');
+
+                    // Asignar forma y color aleatoria
+                    const shape = getRandomShape();
+                    confetti.classList.add(shape);
+                    confetti.style.color = getRandomColor(); // Usar 'currentColor' en CSS para formas como triángulos
+
+                    // Tamaño aleatorio
+                    const size = Math.random() * 8 + 4; // Entre 4px y 12px
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+
+                    // Posición aleatoria
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    confetti.style.top = `${Math.random() * -100}px`;
+                    confetti.style.opacity = Math.random();
+
+                    // Animación aleatoria
+                    confetti.style.animationDelay = `${Math.random() * 5}s`;
+                    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+
+                    // Movimiento horizontal aleatorio
+                    confetti.style.transform = `translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg)`;
+
+                    // Añadir event listener para el hover
+                    confetti.addEventListener('mouseover', function () {
+                        if (!confetti.classList.contains('hit')) {
+                            confetti.classList.add('hit');
+                            // Remover el confetti después de la animación
+                            confetti.addEventListener('animationend', function () {
+                                confetti.remove();
+                            });
+                        }
+                    });
+
+                    confettiContainer.appendChild(confetti);
+                }
             }
 
             // Event listener para el botón "Iniciar Sorteo"
@@ -925,6 +1067,11 @@
                     alert('Participante agregado exitosamente.');
                 }
 
+                // Asegurar que los participantes sean únicos
+                participants = Array.from(new Set(participants.map(a => a.email))).map(email => {
+                    return participants.find(a => a.email === email);
+                });
+
                 localStorage.setItem('participants', JSON.stringify(participants));
                 this.reset();
 
@@ -1008,14 +1155,12 @@
                         }
                     }
 
-                    localStorage.setItem('participants', JSON.stringify(participants));
-
-                    // Actualizar la lista de participantes únicos
-                    const updatedParticipants = Array.from(new Set(participants.map(a => a.email))).map(email => {
+                    // Asegurar que los participantes sean únicos
+                    participants = Array.from(new Set(participants.map(a => a.email))).map(email => {
                         return participants.find(a => a.email === email);
                     });
-                    localStorage.setItem('participants', JSON.stringify(updatedParticipants));
-                    console.log('Participantes únicos actualizados:', updatedParticipants);
+
+                    localStorage.setItem('participants', JSON.stringify(participants));
 
                     alert(`${importados} participantes importados exitosamente.`);
                     console.log(`${importados} participantes importados.`);
