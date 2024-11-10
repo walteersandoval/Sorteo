@@ -1,652 +1,582 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Sorteo - Acryl Nagels</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-      /* =========================
-           CSS: Estilos Completos
+    <style>
+        /* =========================
+                   CSS: Minimalista y Bien Ordenado
         ========================= */
 
-     /* General Styles */
-body, .modal-content, .powered-by {
-    font-family: 'Inter', sans-serif;
-}
-
-body {
-    background: #f9f9fa;
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease;
-    flex-direction: column-reverse;
-    flex-wrap: nowrap;
-    position: relative;
-    overflow: hidden;
-    width: 98%;
-    /* box-sizing: border-box; */
-}
-
-*, .start-button, .options-button {
-    cursor: pointer;
-}
-
-/* Add animated background bubbles */
-.bubble {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background: rgba(177, 120, 221, 0.05);
-    border-radius: 50%;
-    animation: float 10s infinite ease-in-out;
-}
-
-.bubble:nth-child(odd) {
-    background: rgba(225, 163, 244, 0.05);
-}
-
-@keyframes float {
-    0% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(-200px) scale(1.2);
-    }
-    100% {
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Main Container Styles */
-.giveaway-container, .winner-container, .spinner-container {
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.giveaway-container {
-    background: #ffffff;
-    padding: 20px 10px;
-    border-radius: 30px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    z-index: 150;
-}
-
-.giveaway-container.hidden {
-    opacity: 0;
-    transform: scale(0.95);
-    pointer-events: none;
-}
-
-/* Logo Styles (previously giveaway-banner) */
-.giveaway-logo {
-    background-image: url('https://storage.builderall.com//franquias/2/6377743/editor-html/11770805.jpg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    height: 80px;
-    width: 80px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Separation Line Styles */
-.separator {
-    width: 80%;
-    height: 1px;
-    background: #b07df459;
-    margin: 15px auto;
-    border-radius: 5px;
-}
-
-/* Badge Styles: Estilo de cinta cruzada */
-.badge {
-    position: fixed;
-    top: 100px;
-    left: -25px;
-    background: linear-gradient(135deg, #b07df4, #d889e6);
-    color: white;
-    font-weight: bold;
-    padding: 5px 10px;
-    transform: rotate(-45deg);
-    transform-origin: top left;
-    width: 150px;
-    text-align: center;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    font-size: 0.8em;
-    display: block;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    z-index: 300;
-}
-
-.badge:hover {
-    background: linear-gradient(135deg, #d889e6, #b07df4);
-    transform: rotate(-45deg) scale(1.1);
-}
-
-/* Header Styles */
-h1, #countdown span, .winner {
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-    font-size: 1.6em;
-    margin-bottom: 10px;
-    color: #b07df4;
-    font-weight: 700;
-    margin-top: 0;
-    animation: fadeIn 1.5s ease;
-}
-
-/* Countdown Styles */
-#countdown {
-    font-size: 1.2em;
-    color: #b05acb;
-    margin-bottom: 20px;
-    display: flex;
-    /* flex-wrap: wrap; */
-    justify-content: space-between;
-    align-items: center;
-    visibility: hidden;
-    width: 100%;
-    gap: 10px;
-}
-
-#countdown div {
-    text-align: center;
-    padding: 5px;
-    border-radius: 10px;
-    background: rgba(225, 163, 244, 0.1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: calc(25% - 10px);
-    font-size: 13px;
-}
-
-#countdown span {
-    display: block;
-    font-size: 1.4em;
-    font-weight: bold;
-    color: #333;
-    transition: transform 0.3s ease;
-}
-
-.countdown-progress, .loading-indicator {
-    width: 100%;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.countdown-progress {
-    height: 5px;
-    background: #e0e0e0;
-    position: relative;
-    margin-top: 5px;
-}
-
-.countdown-progress-bar {
-    height: 100%;
-    background: #b05acb;
-    transition: width 1s linear;
-}
-
-/* Button Styles */
-.start-button, .modal-content button {
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 8px 20px rgba(225, 163, 244, 0.4);
-    transition: all 0.3s ease;
-}
-
-.start-button {
-    background: linear-gradient(90deg, #b07df4, #b05acb);
-    color: #ffffff;
-    padding: 12px 30px;
-    font-size: 1em;
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    z-index: 1000;
-    margin-top: 15px;
-}
-
-.options-button {
-    background: #b05ccd;
-    border: 2px solid #fff;
-    color: #ffffff;
-    font-size: 28px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: fixed;
-    top: 10px;
-    right: 20px;
-    z-index: 1100;
-    margin-top: 15px;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.options-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg,#b05ccd, #b05ccd);
-}
-
-.tooltip, .tooltip .tooltiptext {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 140px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 5px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1200;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -70px;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Loading Indicator Styles */
-.loading-indicator {
-    height: 10px;
-    background: #e0e0e0;
-    margin-top: 20px;
-    position: relative;
-}
-
-.loading-bar {
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, #b07df4, #b05acb);
-    animation: loading 10s linear;
-}
-
-@keyframes loading {
-    0% {
-        width: 0;
-    }
-    100% {
-        width: 100%;
-    }
-}
-
-.winner-container {
-    margin-top: 20px;
-    visibility: hidden;
-    animation: fadeIn 1.5s ease-in-out;
-    z-index: 250;
-}
-
-.winner-container img {
-    width: 80px;
-    height: 80px;
-    margin: 10px 0;
-    border: 5px solid #b05acb;
-    border-radius: 50%;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.winner {
-    /* font-size: 1.4em; */
-    color: #b07df4;
-    animation: bounceIn 1s ease;
-}
-
-@keyframes bounceIn {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-30px);
-    }
-    60% {
-        transform: translateY(-15px);
-    }
-}
-
-/* Spinner Styles */
-.spinner-container {
-    font-size: 0.9em;
-    color: #333;
-    height: 5em;
-    overflow: hidden;
-    position: absolute;
-    border: 3px solid #b05acb;
-    border-radius: 15px;
-    padding: 12px;
-    width: 85%;
-    background: #f3e5f5;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    z-index: 200;
-    margin-left: 17px;
-}
-
-.spinner {
-    position: absolute;
-    animation: spinParticipants 0.8s linear infinite;
-    text-align: center;
-    width: 100%;
-}
-
-.spinner p {
-    margin: 0;
-    padding: 5px;
-    font-size: 1em;
-    color: #b05acb;
-}
-
-.highlight-winner {
-    font-weight: bold;
-    color: #964eb4;
-    transform: scale(1.3);
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Footer Details */
-.footer-details {
-    margin-top: 20px;
-    font-size: 0.8em;
-    color: #666;
-    visibility: hidden;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.05);
-}
-
-/* Powered By */
-.powered-by {
-    margin-top: 15px;
-    font-size: 0.7em;
-    color: #888;
-    display: flex;
-    align-items: center;
-}
-
-.powered-by img {
-    vertical-align: middle;
-    margin-right: 5px;
-}
-
-/* Keyframes */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes spinParticipants {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-100%); }
-}
-
-/* Confetti */
-.confetti {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 100;
-}
-
-/* Modal Styles */
-.modal, .modal-content, .tooltip, .tooltiptext {
-    transition: all 0.5s ease-in-out;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 300;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: auto;
-    background-color: #ffffff;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    transform: translateY(100%);
-}
-
-.modal.show {
-    transform: translateY(0);
-}
-
-.modal-content {
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    z-index: 400;
-}
-
-.close-modal {
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 500;
-}
-
-.close-modal:hover,
-.close-modal:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Formulario de Registro */
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
-.modal-content label {
-    margin-top: 8px;
-    margin-bottom: 5px;
-    font-weight: bold;
-    text-align: left;
-}
-
-.modal-content input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 0.9em;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-
-.modal-content button {
-    margin-top: 15px;
-    padding: 8px 15px;
-    font-size: 0.9em;
-    background-color: #b05acb;
-    color: #ffffff;
-    box-shadow: 0 8px 20px rgba(176, 92, 203, 0.4);
-}
-
-.modal-content button:hover {
-    transform: translateY(-5px);
-    background-color: #964eb4;
-}
-
-/* Alert Styles */
-.alert-box {
-    background-color: #e74c3c;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 10px;
-    margin-top: 10px;
-    animation: fadeInOut 3s forwards;
-    width: 100%;
-    max-width: 350px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.alert-box.success {
-    background-color: #28a745;
-}
-
-@keyframes fadeInOut {
-    0% { opacity: 0; transform: translateY(-10px); }
-    10% { opacity: 1; transform: translateY(0); }
-    90% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-10px); }
-}
-
-/* Media Queries para Responsividad */
-@media (max-width: 600px) {
-    .giveaway-container, .modal-content {
-        padding: 10px;
-        width: 95%;
-        max-width: 90%;
-    }
-
-    h1 {
-        font-size: 1.3em;
-    }
-
-    #countdown span {
-        font-size: 1.1em;
-    }
-
-    .winner-container img {
-        width: 60px;
-        height: 60px;
-    }
-
-    .start-button, .export-button {
-        padding: 8px;
-        font-size: 0.8em;
-        bottom: 10px;
-        left: 10px;
-    }
-
-  .modal-content button {
-        font-size: 16px;
-        padding: 5px 10px;
-    }
-
-    .badge {
-        top: 80px;
-        left: -20px;
-        width: 110px;
-        font-size: 0.6em;
-    }
-
-    .tooltip .tooltiptext {
-        width: 120px;
-        margin-left: -60px;
-    }
-}
-
-@media (max-width: 400px) {
-    .giveaway-container {
-        width: 100%;
-    }
-
-.modal-content {
-    /* max-width: 400px; */
-    margin: auto;
-    padding: 20px;
-    /* background: #fff; */
-    /* border-radius: 10px; */
-    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
-    z-index: 400;
-    display: grid;
-}
-
-   .modal-content button {
-        font-size: 16px;
-        padding: 5px 10px;
-    }
-
-    .start-button {
-        padding: 18px;
-        font-size: 0.8em;
-        bottom: 84px;
-        left: 30px;
-        right: 30px;
-    }
-}
-
-.notification-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.notification {
-    background-color: #444;
-    color: #fff;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-    max-width: 280px;
-}
-
-.notification.success {
-    background-color: #28a745;
-}
-
-.notification.error {
-    background-color: #dc3545;
-}
-
-@keyframes fadein {
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-
-@keyframes fadeout {
-    from {opacity: 1;}
-    to {opacity: 0;}
-}
-
-        
+        /* General Styles */
+        body,
+        .modal-content,
+        .powered-by {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f9f9fa;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            flex-direction: column-reverse;
+            flex-wrap: nowrap;
+            position: relative;
+            overflow: hidden;
+            width: 98%;
+        }
+
+        *,
+        .start-button,
+        .options-button {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Burbujas animadas de fondo */
+        .bubble {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(177, 120, 221, 0.05);
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .bubble:nth-child(odd) {
+            background: rgba(225, 163, 244, 0.05);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-200px) scale(1.2);
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Estilos del contenedor principal */
+        .giveaway-container,
+        .winner-container,
+        .spinner-container {
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .giveaway-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px 10px;
+            border-radius: 50px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            /*backdrop-filter: blur(10px);*/
+            z-index: 150;
+        }
+
+        .giveaway-container.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* Estilo del logo */
+        .giveaway-logo {
+            background-image: url('https://storage.builderall.com//franquias/2/6377743/editor-html/11770805.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            height: 80px;
+            width: 80px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Línea separadora */
+        .separator {
+            width: 80%;
+            height: 1px;
+            background: #b07df459;
+            margin: 15px auto;
+            border-radius: 5px;
+        }
+
+        /* Estilo de la cinta cruzada */
+        .badge {
+            position: fixed;
+            top: 100px;
+            left: -25px;
+            background: linear-gradient(135deg, #b07df4, #d889e6);
+            color: white;
+            font-weight: bold;
+            padding: 5px 10px;
+            transform: rotate(-45deg);
+            transform-origin: top left;
+            width: 150px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            font-size: 0.8em;
+            display: block;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            z-index: 300;
+        }
+
+        .badge:hover {
+            background: linear-gradient(135deg, #d889e6, #b07df4);
+            transform: rotate(-45deg) scale(1.1);
+        }
+
+        /* Estilos del encabezado */
+        h1,
+        #countdown span,
+        .winner {
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+            margin-bottom: 10px;
+            color: #b07df4;
+            font-weight: 700;
+            margin-top: 0;
+            animation: fadeIn 1.5s ease;
+        }
+
+        /* Estilos de la cuenta regresiva */
+        #countdown {
+            font-size: 1.2em;
+            color: #b05acb;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            visibility: hidden;
+            width: 100%;
+        }
+
+        #countdown div {
+            text-align: center;
+            padding: 5px;
+            border-radius: 10px;
+            background: rgba(225, 163, 244, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 13px;
+        }
+
+        #countdown span {
+            display: block;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            transition: transform 0.3s ease;
+        }
+
+        .countdown-progress,
+        .loading-indicator {
+            width: 100%;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .countdown-progress {
+            height: 5px;
+            background: #e0e0e0;
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .countdown-progress-bar {
+            height: 100%;
+            background: #b05acb;
+            transition: width 1s linear;
+        }
+
+        /* Estilos de los botones */
+        .start-button,
+        .modal-content button {
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(225, 163, 244, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .start-button {
+            background: linear-gradient(90deg, #b07df4, #b05acb);
+            color: #ffffff;
+            padding: 12px 30px;
+            font-size: 1em;
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            z-index: 1000;
+            margin-top: 15px;
+        }
+
+        .start-button:hover {
+            box-shadow: 0 15px 30px rgba(176, 92, 203, 0.6);
+            transform: translateY(-5px);
+        }
+
+        .options-button {
+            background: #b05ccd;
+            border: 2px solid #fff;
+            color: #ffffff;
+            font-size: 28px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            z-index: 1100;
+            margin-top: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .options-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #b05ccd, #b05ccd);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: auto;
+            background-color: #4b0082;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1200;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+            margin-top: -35px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            margin-top: -45px;
+        }
+
+        /* Indicador de carga */
+        .loading-indicator {
+            height: 10px;
+            background: #e0e0e0;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #b07df4, #b05acb);
+            animation: loading 10s linear;
+        }
+
+        @keyframes loading {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .winner-container {
+            margin-top: 20px;
+            visibility: hidden;
+            animation: fadeIn 1.5s ease-in-out;
+            z-index: 250;
+        }
+
+        .winner-container img {
+            width: 80px;
+            height: 80px;
+            margin: 10px 0;
+            border: 5px solid #b05acb;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .winner {
+            color: #b07df4;
+            animation: bounceIn 1s ease;
+        }
+
+        @keyframes bounceIn {
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-30px);
+            }
+
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* Spinner */
+        .spinner-container {
+            font-size: 0.9em;
+            color: #333;
+            height: 5em;
+            overflow: hidden;
+            position: absolute;
+            border: 3px solid #b05acb;
+            border-radius: 15px;
+            padding: 12px;
+            width: 85%;
+            background: rgba(243, 229, 245, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+            margin-left: 17px;
+        }
+
+        .spinner {
+            position: absolute;
+            animation: spinParticipants 0.8s linear infinite;
+            text-align: center;
+            width: 100%;
+        }
+
+        .spinner p {
+            margin: 0;
+            padding: 5px;
+            font-size: 1em;
+            color: #b05acb;
+        }
+
+        .highlight-winner {
+            font-weight: bold;
+            color: #964eb4;
+            transform: scale(1.3);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Footer Details */
+        .footer-details {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #666;
+            visibility: hidden;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Powered By */
+        .powered-by {
+            margin-top: 15px;
+            font-size: 0.7em;
+            color: #888;
+            display: flex;
+            align-items: center;
+        }
+
+        .powered-by img {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        /* Keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spinParticipants {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Modal */
+        .modal,
+        .modal-content,
+        .tooltip,
+        .tooltiptext {
+            transition: all 0.5s ease-in-out;
+        }
+
+        .modal {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s ease-in-out;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffffff, #f0f0f5);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 1100;
+            position: relative;
+        }
+
+        .close-modal,
+        .close-options-modal,
+        .close-participants-modal {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1200;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus,
+        .close-options-modal:hover,
+        .close-options-modal:focus,
+        .close-participants-modal:hover,
+        .close-participants-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Estilos para tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Estilos para formularios */
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        form input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #b05acb;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #964eb4;
+        }
     </style>
 </head>
+
 <body>
-    <!-- Add animated bubbles for decorative effect -->
+    <!-- Burbujas animadas para efecto decorativo -->
     <div class="bubble" style="top: 5%; left: 10%; width: 60px; height: 60px;"></div>
     <div class="bubble" style="top: 20%; left: 80%; width: 70px; height: 70px;"></div>
     <div class="bubble" style="top: 70%; left: 50%; width: 80px; height: 80px;"></div>
@@ -656,59 +586,31 @@ h1 {
     <div class="bubble" style="top: 40%; left: 70%; width: 80px; height: 80px;"></div>
     <div class="bubble" style="top: 80%; left: 30%; width: 50px; height: 50px;"></div>
 
-    <div class="loading-indicator" id="loading-indicator" style="display: none;"><div class="loading-bar"></div></div>
-   
-    <!-- Giveaway container with initial screen -->
+    <!-- Indicador de carga -->
+    <div class="loading-indicator" id="loading-indicator" style="display: none;">
+        <div class="loading-bar"></div>
+    </div>
+
+    <!-- Contenedor inicial del sorteo -->
     <div class="giveaway-container" id="initial-screen">
         <div class="badge" id="badge">Preparado</div>
         <div class="giveaway-logo"></div>
-        <h1>Sorteo </h1>
+        <h1>Sorteo</h1>
         <div class="separator"></div>
-        <div id="countdown" style="visibility: hidden;">
-            <div>
-                <span id="days">0</span>
-                <strong>DÍAS</strong>
-                <div class="countdown-progress"><div class="countdown-progress-bar" id="days-bar"></div></div>
-            </div>
-            <div>
-                <span id="hours">0</span>
-                <strong>HORAS</strong>
-                <div class="countdown-progress"><div class="countdown-progress-bar" id="hours-bar"></div></div>
-            </div>
-            <div>
-                <span id="minutes">0</span>
-                <strong>MINUTOS</strong>
-                <div class="countdown-progress"><div class="countdown-progress-bar" id="minutes-bar"></div></div>
-            </div>
-            <div>
-                <span id="seconds">0</span>
-                <strong>SEGUNDOS</strong>
-                <div class="countdown-progress"><div class="countdown-progress-bar" id="seconds-bar"></div></div>
-            </div>
-        </div>
-        <div class="separator"></div>
-        <div class="tooltip">
-            <button class="start-button" id="start-button">Iniciar Sorteo</button>
-            <span class="tooltiptext">Inicia el sorteo</span>
-        </div>
-        <div class="tooltip">
-            <button class="options-button" id="options-button">⚙</button>
-            <span class="tooltiptext">Opciones</span>
-        </div>
-        <button class="start-button" id="pause-resume-button" style="display: none;">Pausar</button>
+        <button class="start-button" id="start-button">Iniciar Sorteo</button>
+        <button class="options-button" id="options-button">&#9881;</button>
     </div>
 
-    <!-- Giveaway container during draw -->
+    <!-- Contenedor durante el sorteo -->
     <div class="giveaway-container" id="giveaway-screen" style="display: none;">
         <div class="badge" id="badge-final">En proceso</div>
         <div class="giveaway-logo"></div>
-        <h1 id="giveaway-status" style="color: #b07df4;">¡El sorteo está en proceso!</h1>
+        <h1 id="giveaway-status" style="color: #b07df4;">El sorteo está en proceso!</h1>
         <div class="separator"></div>
         <p id="winner-announcement" style="display: none; font-weight: bold;">El ganador es:</p>
         <div class="spinner-container" id="spinner-container">
             <div class="spinner" id="spinner"></div>
         </div>
-
         <div class="winner-container" id="winner-container">
             <img src="https://cdn.kingsumo.com/img/giv/winner.svg" alt="Ganador" id="winner-image">
             <p class="winner" id="winner"></p>
@@ -718,61 +620,35 @@ h1 {
             <p id="sorteo-finalizado" style="font-weight: bold;"></p>
             <p><strong>SORTEO ZONA HORARIA:</strong> EST &nbsp;&nbsp; <strong>OFRECIDO POR:</strong> WOOKCOM</p>
         </div>
-        <div class="powered-by">
-            <img src="https://cdn.kingsumo.com/img/logo.svg" alt="KingSumo Logo" width="20">
-            <span><strong>Powered by AcrylNagels</strong></span>
-        </div>
     </div>
-    <canvas class="confetti" id="confetti"></canvas>
 
-    <!-- Modal for options -->
+    <!-- Modal de opciones -->
     <div id="options-modal" class="modal" aria-hidden="true">
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="options-modal-title">
             <span class="close-options-modal" id="close-options-modal">&times;</span>
             <h2 id="options-modal-title">Opciones</h2>
             <div class="separator"></div>
             <button id="adjust-countdown-button">Ajustar Contador</button>
-          
             <button id="open-modal">Agregar Participantes</button>
-<button id="view-participants-button">Ver Participantes</button>
-
-        </div>
-    </div>
-     <!-- Modal lista de participa -->
-<div id="participants-modal" class="modal" aria-hidden="true">
-    <div class="modal-content">
-        <span class="close-participants-modal" id="close-participants-modal">&times;</span>
-        <h3>Lista de Participantes</h3>
-        <div class="separator"></div>
-        <!-- Aquí se insertará dinámicamente el contenido de los participantes -->
-    </div>
-</div>
-
-    <!-- Modal for countdown adjustment -->
-    <div id="countdown-modal" class="modal" aria-hidden="true">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="countdown-modal-title">
-            <span class="close-countdown-modal" id="close-countdown-modal">&times;</span>
-            <h2 id="countdown-modal-title">Ajustar Contador</h2>
+            <button id="view-participants-button">Ver Participantes</button>
             <div class="separator"></div>
-            <label for="adjust-days">Días:</label>
-            <input type="number" id="adjust-days" name="adjust-days" min="0" max="365" value="0">
-            <label for="adjust-hours">Horas:</label>
-            <input type="number" id="adjust-hours" name="adjust-hours" min="0" max="23" value="0">
-            <label for="adjust-minutes">Minutos:</label>
-            <input type="number" id="adjust-minutes" name="adjust-minutes" min="0" max="59" value="0">
-            <label for="adjust-seconds">Segundos:</label>
-            <input type="number" id="adjust-seconds" name="adjust-seconds" min="0" max="59" value="10">
-            <label for="start-method">Método de inicio:</label>
-            <select id="start-method">
-                <option value="manual" selected>Manual</option>
-                <option value="countdown">Con Contador</option>
-            </select>
-            <div class="separator"></div>
-            <button id="save-countdown-button">Guardar</button>
+            <label for="import-participants-button">Importar Participantes (CSV):</label>
+            <input type="file" id="import-participants-button" accept=".csv">
         </div>
     </div>
 
-    <!-- Modal for participant registration -->
+    <!-- Modal de lista de participantes -->
+    <div id="participants-modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close-participants-modal" id="close-participants-modal">&times;</span>
+            <h3>Lista de Participantes</h3>
+            <div class="separator"></div>
+            <!-- La lista de participantes se agregará dinámicamente aquí -->
+            <div id="participants-list"></div>
+        </div>
+    </div>
+
+    <!-- Modal de registro de participante -->
     <div id="participant-modal" class="modal" aria-hidden="true">
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <span class="close-modal" id="close-modal">&times;</span>
@@ -781,625 +657,452 @@ h1 {
             <form id="registration-form">
                 <label for="name">Nombre:</label>
                 <input type="text" id="name" name="name" required>
-
                 <label for="email">Correo Electrónico:</label>
                 <input type="email" id="email" name="email" required>
-
                 <button type="submit">Agregar Participante</button>
             </form>
             <div id="registration-alert" aria-live="polite"></div>
         </div>
     </div>
-<div id="notification-container" class="notification-container"></div>
-
 
     <script>
-     // JavaScript code to manage participant data and the giveaway functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded and parsed');
-            // Load participant data from localStorage or initialize with defaults
-            const participants = JSON.parse(localStorage.getItem('participants')) || [
-                { name: "Juan Perez", email: "juan.perez@example.com" },
-                { name: "Maria Gomez", email: "maria.gomez@example.com" },
-                { name: "Carlos Diaz", email: "carlos.diaz@example.com" },
-                { name: "Ana Lopez", email: "ana.lopez@example.com" }
-            ];
-            console.log('Loaded participants:', participants);
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM completamente cargado y analizado');
 
-            // Ensure participants are unique based on email
+            // Cargar datos de participantes desde localStorage o inicializar con arreglo vacío
+            let participants = JSON.parse(localStorage.getItem('participants')) || [];
+            console.log('Participantes cargados:', participants);
+
+            // Asegurar que los participantes sean únicos basados en el email
             const uniqueParticipants = Array.from(new Set(participants.map(a => a.email))).map(email => {
                 return participants.find(a => a.email === email);
             });
             localStorage.setItem('participants', JSON.stringify(uniqueParticipants));
-            console.log('Unique participants:', uniqueParticipants);
+            console.log('Participantes únicos:', uniqueParticipants);
 
-            let countdownInterval;
-            let isPaused = false;
-            let remainingSeconds;
-
-            // Callback function to be called when countdown finishes
-            function countdownFinishedCallback() {
-                console.log('Countdown finished! Callback triggered.');
-                initiateGiveaway();
-            }
-
-            // Handle start button click event to initiate giveaway
-            document.getElementById('start-button').addEventListener('click', function() {
-                console.log('Start button clicked');
-                if(uniqueParticipants.length === 0) {
-                    console.log('No participants registered. Cannot initiate the giveaway.');
-                    alert('No hay participantes registrados. No se puede iniciar el sorteo.');
-                    return;
-                }
-                initiateGiveaway();
-            });
-
-            // Function to start countdown only
-            function startCountdown() {
-                console.log('Starting countdown');
-                // Retrieve time values from input fields
-                const days = parseInt(document.getElementById('adjust-days').value) || 0;
-                const hours = parseInt(document.getElementById('adjust-hours').value) || 0;
-                const minutes = parseInt(document.getElementById('adjust-minutes').value) || 0;
-                const seconds = parseInt(document.getElementById('adjust-seconds').value) || 0;
-
-                // Validate time input ranges
-                if (hours > 23 || minutes > 59 || seconds > 59) {
-                    console.log('Invalid time input for hours, minutes, or seconds.');
-                    alert('Por favor ingrese un valor válido para horas (0-23), minutos (0-59), y segundos (0-59).');
-                    return;
-                }
-
-                // Convert all time units to seconds
-                remainingSeconds = (((days * 24 + hours) * 60 + minutes) * 60 + seconds);
-                if (remainingSeconds <= 0) {
-                    console.log('Invalid countdown time provided. Must be greater than zero.');
-                    alert('Por favor ingrese un tiempo válido para el contador.');
-                    return;
-                }
-
-                // Show countdown timer element and initialize the display
-                const countdownElement = document.getElementById('countdown');
-                countdownElement.style.visibility = 'visible';
-                updateCountdownDisplay(remainingSeconds);
-
-                // Start the countdown interval
-                countdownInterval = setInterval(function() {
-                    if (remainingSeconds <= 0) {
-                        clearInterval(countdownInterval);
-                        console.log('Countdown finished');
-                        countdownFinishedCallback();
-                        return;
-                    }
-                    remainingSeconds -= 1;
-                    console.log('Countdown update: Remaining seconds:', remainingSeconds);
-                    updateCountdownDisplay(remainingSeconds);
-                }, 1000);
-            }
-
-            function updateCountdownDisplay(totalSeconds) {
-                // Calculate days, hours, minutes, and seconds from total seconds
-                const days = Math.floor(totalSeconds / (24 * 3600));
-                totalSeconds %= (24 * 3600);
-                const hours = Math.floor(totalSeconds / 3600);
-                totalSeconds %= 3600;
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
-
-                console.log(`Updating countdown display - Days: ${days}, Hours: ${hours}, Minutes: ${minutes}, Seconds: ${seconds}`);
-
-                // Update countdown display elements
-                document.getElementById('days').innerText = days;
-                document.getElementById('hours').innerText = hours;
-                document.getElementById('minutes').innerText = minutes;
-                document.getElementById('seconds').innerText = seconds;
-
-                // Update progress bars dynamically based on current countdown values
-                document.getElementById('days-bar').style.width = `${(days / 365) * 100}%`;
-                document.getElementById('hours-bar').style.width = `${(hours / 23) * 100}%`;
-                document.getElementById('minutes-bar').style.width = `${(minutes / 59) * 100}%`;
-                document.getElementById('seconds-bar').style.width = `${(seconds / 59) * 100}%`;
-            }
-
-            // Handle the countdown adjustment button click
-            document.getElementById('save-countdown-button').addEventListener('click', function() {
-                console.log('Save countdown button clicked');
-                const countdownModal = document.getElementById('countdown-modal');
-                countdownModal.style.display = 'none';
-                countdownModal.setAttribute('aria-hidden', 'true');
-
-                // Get the selected start method (manual or countdown)
-                const startMethod = document.getElementById('start-method').value;
-                console.log('Start method selected:', startMethod);
-                const countdownElement = document.getElementById('countdown');
-                const startButton = document.getElementById('start-button');
-                const pauseResumeButton = document.getElementById('pause-resume-button');
-
-                // Show/hide elements based on the selected start method
-                if (startMethod === 'manual') {
-                    countdownElement.style.display = 'none';
-                    startButton.style.display = 'inline-block';
-                    pauseResumeButton.style.display = 'none';
-                } else if (startMethod === 'countdown') {
-                    countdownElement.style.display = 'flex';
-                    startButton.style.display = 'none';
-                    pauseResumeButton.style.display = 'inline-block';
-                    startCountdown();
-                }
-            });
-
-            // Handle pause/resume button click
-            document.getElementById('pause-resume-button').addEventListener('click', function() {
-                if (isPaused) {
-                    console.log('Resuming countdown');
-                    isPaused = false;
-                    startCountdown();
-                    this.innerText = 'Pausar';
-                } else {
-                    console.log('Pausing countdown');
-                    isPaused = true;
-                    clearInterval(countdownInterval);
-                    this.innerText = 'Reanudar';
-                }
-            });
-
-            // Open options modal on click of the options button
-            document.getElementById('options-button').addEventListener('click', function() {
-                console.log('Options button clicked');
-                const optionsModal = document.getElementById('options-modal');
-                optionsModal.style.display = 'flex';
-                optionsModal.setAttribute('aria-hidden', 'false');
-            });
-
-            // Open countdown adjustment modal
-            document.getElementById('adjust-countdown-button').addEventListener('click', function() {
-                console.log('Adjust countdown button clicked');
-                const countdownModal = document.getElementById('countdown-modal');
-                countdownModal.style.display = 'flex';
-                countdownModal.setAttribute('aria-hidden', 'false');
-            });
-
-            // Close countdown modal when clicking close icon
-            document.getElementById('close-countdown-modal').addEventListener('click', function() {
-                console.log('Close countdown modal button clicked');
-                const countdownModal = document.getElementById('countdown-modal');
-                countdownModal.style.display = 'none';
-                countdownModal.setAttribute('aria-hidden', 'true');
-            });
-
-            // Close options modal when clicking close icon
-            document.getElementById('close-options-modal').addEventListener('click', function() {
-                console.log('Close options modal button clicked');
-                const optionsModal = document.getElementById('options-modal');
-                optionsModal.style.display = 'none';
-                optionsModal.setAttribute('aria-hidden', 'true');
-            });
-
-            // Function to initiate the giveaway
+            // Función para iniciar el sorteo
             function initiateGiveaway() {
-                console.log('Initiating giveaway');
+                console.log('Iniciando sorteo');
                 document.getElementById('loading-indicator').style.display = 'block';
                 const badge = document.getElementById('badge');
                 badge.innerText = 'En proceso';
                 badge.style.backgroundColor = '#b07df4';
 
-                // Update final badge to reflect giveaway status
-                document.getElementById('badge-final').innerText = 'En proceso';
+                // Actualizar badge final para reflejar el estado del sorteo
+                const badgeFinal = document.getElementById('badge-final');
+                if (badgeFinal) {
+                    badgeFinal.innerText = 'En proceso';
+                }
 
-                // Switch visibility between initial and giveaway screens
-                document.getElementById('initial-screen').style.display = 'none';
-                document.getElementById('giveaway-screen').style.display = 'block';
-                document.getElementById('winner-announcement').style.display = 'none';
+                // Cambiar visibilidad entre pantallas inicial y de sorteo
+                const initialScreen = document.getElementById('initial-screen');
+                const giveawayScreen = document.getElementById('giveaway-screen');
+                const winnerAnnouncement = document.getElementById('winner-announcement');
+                if (initialScreen && giveawayScreen && winnerAnnouncement) {
+                    initialScreen.style.display = 'none';
+                    giveawayScreen.style.display = 'block';
+                    winnerAnnouncement.style.display = 'none';
+                }
 
-                // Check if there are participants to draw from
+                // Verificar si hay participantes para el sorteo
                 if (uniqueParticipants.length === 0) {
-                    console.log('No participants found. Aborting giveaway.');
+                    console.log('No se encontraron participantes. Abortando sorteo.');
                     alert('No hay participantes registrados.');
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    badge.innerText = 'Preparado';
+                    badge.style.backgroundColor = '#b07df4';
+                    giveawayScreen.style.display = 'none';
+                    initialScreen.style.display = 'block';
                     return;
                 }
 
-                // Populate spinner with participant names
+                // Poblar el spinner con los nombres de los participantes
                 const spinner = document.getElementById('spinner');
-                spinner.innerHTML = '';
-                uniqueParticipants.forEach(participant => {
-                    const pElement = document.createElement('p');
-                    pElement.innerText = participant.name;
-                    spinner.appendChild(pElement);
-                });
-                console.log('Spinner populated with participants');
+                if (spinner) {
+                    spinner.innerHTML = '';
+                    uniqueParticipants.forEach(participant => {
+                        const pElement = document.createElement('p');
+                        pElement.innerText = participant.name;
+                        spinner.appendChild(pElement);
+                    });
+                    console.log('Spinner poblado con participantes');
+                }
 
-                // Simulate drawing a winner after a set duration (for example, 10 seconds)
-                setTimeout(function() {
-                    console.log('Selecting a winner');
+                // Simular el sorteo y seleccionar un ganador después de 10 segundos
+                setTimeout(function () {
+                    console.log('Seleccionando un ganador');
                     const randomIndex = Math.floor(Math.random() * uniqueParticipants.length);
                     const winner = uniqueParticipants[randomIndex];
-                    console.log('Winner selected:', winner);
-                    // Mask winner's email to partially hide sensitive information
-                    const winnerEmailMasked = winner.email.replace(/^(.{4})(.*)(@.*)$/, (match, p1, p2, p3) => `${p1}${"x".repeat(p2.length)}${p3}`);
-                    document.getElementById('winner').innerText = `${winner.name} (${winnerEmailMasked})`;
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    document.getElementById('winner-container').style.visibility = 'visible';
+                    console.log('Ganador seleccionado:', winner);
 
-                    // Update final giveaway status and display confetti animation
+                    // Enmascarar el email del ganador
+                    const winnerEmailMasked = winner.email.replace(/^(.{4})(.*)(@.*)$/, (match, p1, p2, p3) => `${p1}${"x".repeat(p2.length)}${p3}`);
+                    const winnerElement = document.getElementById('winner');
+                    if (winnerElement) {
+                        winnerElement.innerText = `${winner.name} (${winnerEmailMasked})`;
+                    }
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    const winnerContainer = document.getElementById('winner-container');
+                    if (winnerContainer) {
+                        winnerContainer.style.visibility = 'visible';
+                    }
+
+                    // Actualizar el estado final del sorteo
                     const currentDate = new Date();
-                    console.log('Giveaway finished at:', currentDate);
-                    document.getElementById('sorteo-finalizado').innerText = `SORTEO FINALIZADO: ${currentDate.toLocaleDateString()} A LAS ${currentDate.toLocaleTimeString()}`;
-                    document.getElementById('giveaway-status').innerText = 'Sorteo Finalizado';
+                    console.log('Sorteo finalizado en:', currentDate);
+                    const sorteoFinalizado = document.getElementById('sorteo-finalizado');
+                    const giveawayStatus = document.getElementById('giveaway-status');
+                    if (sorteoFinalizado && giveawayStatus) {
+                        sorteoFinalizado.innerText = `SORTEO FINALIZADO: ${currentDate.toLocaleDateString()} A LAS ${currentDate.toLocaleTimeString()}`;
+                        giveawayStatus.innerText = 'Sorteo Finalizado';
+                    }
 
                     badge.innerText = 'Finalizado';
-                    document.getElementById('badge-final').innerText = 'Finalizado';
+                    if (badgeFinal) {
+                        badgeFinal.innerText = 'Finalizado';
+                    }
                     badge.style.backgroundColor = '#964eb4';
 
-                    document.querySelector('.footer-details').style.visibility = 'visible';
-                    spinner.style.animation = 'none';
-                    document.getElementById('spinner-container').style.display = 'none';
-                    console.log('Displaying confetti animation');
-                    launchConfetti();
+                    const footerDetails = document.querySelector('.footer-details');
+                    if (footerDetails) {
+                        footerDetails.style.visibility = 'visible';
+                    }
+                    if (spinner) {
+                        spinner.style.animation = 'none';
+                    }
+                    const spinnerContainer = document.getElementById('spinner-container');
+                    if (spinnerContainer) {
+                        spinnerContainer.style.display = 'none';
+                    }
                 }, 10000);
             }
 
-            // Function to create confetti effect
-            function launchConfetti() {
-                console.log('Launching confetti');
-                const canvas = document.getElementById('confetti');
-                const context = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                let particles = [];
-                const particleCount = 300;
-                for (let i = 0; i < particleCount; i++) {
-                    particles.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height - canvas.height,
-                        r: Math.random() * 5 + 3,
-                        d: Math.random() * particleCount,
-                        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                        tilt: Math.floor(Math.random() * 10) - 10,
-                        tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
-                        tiltAngle: 0
-                    });
-                }
-                console.log('Particles for confetti created:', particles);
-
-                function draw() {
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    particles.forEach(particle => {
-                        particle.tiltAngle += particle.tiltAngleIncremental;
-                        particle.y += 2;
-                        particle.tilt = Math.sin(particle.tiltAngle) * 15;
-                        const x = particle.x + particle.tilt;
-                        context.beginPath();
-                        context.lineWidth = particle.r;
-                        context.strokeStyle = particle.color;
-                        context.moveTo(x + particle.tilt, particle.y);
-                        context.lineTo(x, particle.y + particle.tilt + particle.r / 2);
-                        context.stroke();
-
-                        // Reset particle to top of screen when it falls below the canvas height
-                        if (particle.y > canvas.height) {
-                            particle.y = -particle.r;
-                            particle.x = Math.random() * canvas.width;
-                        }
-                    });
-                    requestAnimationFrame(draw);
-                }
-                draw();
+            // Event listener para el botón "Iniciar Sorteo"
+            const startButton = document.getElementById('start-button');
+            if (startButton) {
+                startButton.addEventListener('click', function () {
+                    console.log('Botón de iniciar sorteo clickeado');
+                    initiateGiveaway();
+                });
+            } else {
+                console.error('Botón de iniciar sorteo no encontrado');
             }
 
-            /* -------------------------
-               Modal Management Module
-            ------------------------- */
-            // Get modal elements from the DOM
-            const modal = document.getElementById('participant-modal');
-            const openModalText = document.getElementById('open-modal');
-            const closeModalButton = document.getElementById('close-modal');
-            const registrationForm = document.getElementById('registration-form');
-            const registrationAlert = document.getElementById('registration-alert');
+            // Función para ver, editar y eliminar participantes
+            function viewParticipants() {
+                const participantList = JSON.parse(localStorage.getItem('participants')) || [];
+                let participantHTML = '<table><thead><tr><th>Nombre</th><th>Correo Electrónico</th><th>Acciones</th></tr></thead><tbody>';
+                participantList.forEach((participant, index) => {
+                    participantHTML += `<tr><td>${participant.name}</td><td>${participant.email}</td><td><button class="edit-participant-button" data-index="${index}">Editar</button> <button class="delete-participant-button" data-index="${index}">Eliminar</button></td></tr>`;
+                });
+                participantHTML += '</tbody></table>';
 
-            // Open modal for participant registration
-            openModalText.addEventListener('click', function() {
-                console.log('Open registration modal button clicked');
-                modal.style.display = 'flex';
-                modal.setAttribute('aria-hidden', 'false');
-            });
-
-            // Close modal when clicking 'X' icon
-            closeModalButton.addEventListener('click', function() {
-                console.log('Close registration modal button clicked');
-                modal.style.display = 'none';
-                modal.setAttribute('aria-hidden', 'true');
-                registrationAlert.innerHTML = '';
-            });
-
-            // Close modal when clicking outside the modal content
-            window.addEventListener('click', function(event) {
-                if (event.target == modal) {
-                    console.log('Clicked outside the modal, closing modal');
-                    modal.style.display = 'none';
-                    modal.setAttribute('aria-hidden', 'true');
-                    registrationAlert.innerHTML = '';
+                const participantsModal = document.getElementById('participants-modal');
+                if (participantsModal) {
+                    participantsModal.querySelector('.modal-content').innerHTML = `
+                        <span class="close-participants-modal" id="close-participants-modal">&times;</span>
+                        <h3>Lista de Participantes</h3>
+                        <div class="separator"></div>
+                        ${participantHTML}
+                    `;
+                } else {
+                    console.error('No se encontró el modal participants-modal.');
+                    return;
                 }
-            });
+                participantsModal.classList.add('show');
+                participantsModal.setAttribute('aria-hidden', 'false');
 
-            // Handle registration form submission to add new participant
-            registrationForm.addEventListener('submit', function(event) {
+                // Adjuntar event listeners para botones de editar y eliminar
+                document.querySelectorAll('.edit-participant-button').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const index = this.getAttribute('data-index');
+                        console.log('Botón de editar clickeado para el índice:', index);
+                        editParticipant(index);
+                    });
+                });
+
+                document.querySelectorAll('.delete-participant-button').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const index = this.getAttribute('data-index');
+                        console.log('Botón de eliminar clickeado para el índice:', index);
+                        deleteParticipant(index);
+                    });
+                });
+
+                // Event listener para cerrar el modal de participantes
+                document.getElementById('close-participants-modal').addEventListener('click', function () {
+                    console.log('Botón de cerrar modal de participantes clickeado');
+                    participantsModal.classList.remove('show');
+                    participantsModal.setAttribute('aria-hidden', 'true');
+                });
+            }
+
+            function editParticipant(index) {
+                const participants = JSON.parse(localStorage.getItem('participants'));
+                if (participants && participants[index]) {
+                    const participant = participants[index];
+                    console.log('Editando participante:', participant);
+                    document.getElementById('name').value = participant.name;
+                    document.getElementById('email').value = participant.email;
+
+                    // Almacenar el índice del participante que se está editando
+                    document.getElementById('registration-form').setAttribute('data-edit-index', index);
+
+                    // Mostrar el modal de registro para editar
+                    const participantModal = document.getElementById('participant-modal');
+                    if (participantModal) {
+                        participantModal.classList.add('show');
+                        participantModal.setAttribute('aria-hidden', 'false');
+                    } else {
+                        console.error('No se encontró el modal participant-modal para editar.');
+                    }
+                } else {
+                    console.error('No se pudo encontrar el participante para editar.');
+                }
+            }
+
+            function deleteParticipant(index) {
+                let participants = JSON.parse(localStorage.getItem('participants'));
+                if (participants && participants[index]) {
+                    console.log('Eliminando participante en el índice:', index);
+                    participants.splice(index, 1);
+                    localStorage.setItem('participants', JSON.stringify(participants));
+                    alert('Participante eliminado exitosamente.');
+                    viewParticipants();
+                } else {
+                    console.error('No se pudo encontrar el participante para eliminar.');
+                }
+            }
+
+            // Event listener para el botón "Ver Participantes"
+            const viewParticipantsButton = document.getElementById('view-participants-button');
+            if (viewParticipantsButton) {
+                viewParticipantsButton.addEventListener('click', function () {
+                    console.log('Botón de ver participantes clickeado');
+                    viewParticipants();
+                });
+            } else {
+                console.error('Botón de ver participantes no encontrado');
+            }
+
+            // Manejar el envío del formulario de registro para agregar o editar participantes
+            document.getElementById('registration-form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 const name = document.getElementById('name').value.trim();
                 const email = document.getElementById('email').value.trim().toLowerCase();
-                console.log('Registration form submitted with name:', name, 'email:', email);
+                console.log('Enviando formulario de registro con nombre:', name, 'email:', email);
 
-                // Validate fields are not empty
                 if (name === '' || email === '') {
-                    console.log('Validation failed: empty fields');
-                    mostrarAlerta('Por favor, completa todos los campos.', 'error');
+                    console.log('Validación fallida: falta nombre o email');
+                    alert('Por favor, completa todos los campos.');
                     return;
                 }
 
-                // Validate email format
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(email)) {
-                    console.log('Validation failed: invalid email format');
-                    mostrarAlerta('Por favor, ingresa un correo electrónico válido.', 'error');
+                    console.log('Validación fallida: formato de email inválido');
+                    alert('Por favor, ingresa un correo electrónico válido.');
                     return;
                 }
 
-                // Check if participant with same email already exists
-                const storedParticipants = JSON.parse(localStorage.getItem('participants')) || [];
-                const existe = storedParticipants.some(participant => participant.email === email);
-                if (existe) {
-                    console.log('Validation failed: email already registered');
-                    mostrarAlerta('Este correo electrónico ya está registrado.', 'error');
-                    return;
+                let participants = JSON.parse(localStorage.getItem('participants')) || [];
+                const editIndex = this.getAttribute('data-edit-index');
+
+                if (editIndex !== null && editIndex !== undefined && editIndex !== '') {
+                    console.log('Actualizando participante en el índice:', editIndex);
+                    // Actualizar participante existente
+                    participants[editIndex] = { name, email };
+                    this.removeAttribute('data-edit-index');
+                    alert('Participante actualizado exitosamente.');
+                } else {
+                    if (participants.some(participant => participant.email === email)) {
+                        console.log('Validación fallida: email ya existe en la lista de participantes');
+                        alert('Este correo electrónico ya está registrado.');
+                        return;
+                    }
+                    console.log('Agregando nuevo participante con nombre:', name, 'email:', email);
+                    participants.push({ name, email });
+                    alert('Participante agregado exitosamente.');
                 }
 
-                // Add new participant and update localStorage
-                const nuevoParticipante = { name, email };
-                storedParticipants.push(nuevoParticipante);
-                localStorage.setItem('participants', JSON.stringify(storedParticipants));
-                console.log('New participant added:', nuevoParticipante);
+                localStorage.setItem('participants', JSON.stringify(participants));
+                this.reset();
 
-                // Update in-memory participant list
-                uniqueParticipants.push(nuevoParticipante);
-                console.log('Updated unique participants:', uniqueParticipants);
-
-                mostrarAlerta('Participante agregado exitosamente.', 'success');
-                registrationForm.reset();
-
-                // Close the participant modal after saving
-                modal.style.display = 'none';
-                modal.setAttribute('aria-hidden', 'true');
+                // Cerrar el modal de participante después de guardar
+                const participantModal = document.getElementById('participant-modal');
+                if (participantModal) {
+                    participantModal.classList.remove('show');
+                    participantModal.setAttribute('aria-hidden', 'true');
+                }
             });
 
-            // Function to display alert messages in the modal
-            function mostrarAlerta(mensaje, tipo) {
-                console.log('Displaying alert message:', mensaje, 'type:', tipo);
-                registrationAlert.innerHTML = '';
-                const alerta = document.createElement('div');
-                alerta.classList.add('alert-box');
-                if (tipo === 'success') {
-                    alerta.classList.add('success');
-                }
-                alerta.textContent = mensaje;
-                registrationAlert.appendChild(alerta);
-                
-                // Auto-hide the alert after a few seconds
-                setTimeout(() => {
-                    registrationAlert.innerHTML = '';
-                }, 3000);
+            // Función para importar participantes desde un archivo CSV
+            function importParticipantsFromCSV(file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const csvContent = event.target.result;
+                    console.log('Contenido del CSV:', csvContent);
+
+                    // Detectar el delimitador (coma o tabulación)
+                    const delimiter = csvContent.includes(',') ? ',' : '\t';
+                    console.log('Delimitador detectado:', delimiter);
+
+                    const rows = csvContent.split('\n').filter(row => row.trim() !== '');
+                    console.log('Número de filas:', rows.length);
+
+                    if (rows.length < 2) {
+                        console.log('El archivo CSV no contiene suficientes filas para importar.');
+                        alert('El archivo CSV no contiene suficientes filas para importar.');
+                        return;
+                    }
+
+                    // Asumir que la primera fila es el encabezado y mapear las columnas
+                    const headers = rows[0].split(delimiter).map(header => header.trim().toUpperCase());
+                    console.log('Encabezados:', headers);
+
+                    const emailIndex = headers.indexOf('EMAIL');
+                    // Buscar varios posibles encabezados para el nombre
+                    const possibleNameHeaders = ['FNAME', 'NAME', 'NOMBRE'];
+                    let nameIndex = -1;
+                    for (let header of possibleNameHeaders) {
+                        nameIndex = headers.indexOf(header);
+                        if (nameIndex !== -1) break;
+                    }
+
+                    if (emailIndex === -1 || nameIndex === -1) {
+                        console.log('Los encabezados EMAIL y FNAME/NAME/NOMBRE son obligatorios.');
+                        alert('Los encabezados EMAIL y FNAME/NAME/NOMBRE son obligatorios.');
+                        return;
+                    }
+
+                    let importados = 0;
+                    let participants = JSON.parse(localStorage.getItem('participants')) || [];
+                    for (let i = 1; i < rows.length; i++) { // Empezar desde la segunda fila
+                        const row = rows[i];
+                        const columns = row.split(delimiter);
+
+                        if (columns.length <= Math.max(emailIndex, nameIndex)) {
+                            console.log(`Fila ${i + 1} inválida: no contiene suficientes columnas.`);
+                            continue;
+                        }
+
+                        const email = columns[emailIndex].trim().toLowerCase();
+                        const name = columns[nameIndex].trim();
+
+                        if (email === '' || name === '') {
+                            console.log(`Fila ${i + 1} inválida: nombre o email vacío.`);
+                            continue;
+                        }
+
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(email)) {
+                            console.log(`Fila ${i + 1} inválida: formato de email incorrecto (${email}).`);
+                            continue;
+                        }
+
+                        if (!participants.some(participant => participant.email === email)) {
+                            participants.push({ name, email });
+                            importados++;
+                        } else {
+                            console.log(`Fila ${i + 1}: el correo ${email} ya está registrado. Se omite.`);
+                        }
+                    }
+
+                    localStorage.setItem('participants', JSON.stringify(participants));
+
+                    // Actualizar la lista de participantes únicos
+                    const updatedParticipants = Array.from(new Set(participants.map(a => a.email))).map(email => {
+                        return participants.find(a => a.email === email);
+                    });
+                    localStorage.setItem('participants', JSON.stringify(updatedParticipants));
+                    console.log('Participantes únicos actualizados:', updatedParticipants);
+
+                    alert(`${importados} participantes importados exitosamente.`);
+                    console.log(`${importados} participantes importados.`);
+                };
+                reader.onerror = function () {
+                    console.error('Error al leer el archivo CSV.');
+                    alert('Hubo un error al leer el archivo CSV. Por favor, intenta nuevamente.');
+                };
+                reader.readAsText(file);
+            }
+
+            // Event listener para importar participantes desde CSV
+            const importButton = document.getElementById('import-participants-button');
+            if (importButton) {
+                importButton.addEventListener('change', function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        console.log('Archivo seleccionado:', file.name);
+                        importParticipantsFromCSV(file);
+                        // Resetear el valor del input para permitir importar el mismo archivo nuevamente si es necesario
+                        event.target.value = '';
+                    } else {
+                        console.log('No se seleccionó ningún archivo.');
+                    }
+                });
+            } else {
+                console.error('Botón de importación no encontrado.');
+            }
+
+            // Event listener para abrir el modal de opciones
+            const optionsButton = document.getElementById('options-button');
+            const optionsModal = document.getElementById('options-modal');
+            if (optionsButton && optionsModal) {
+                optionsButton.addEventListener('click', function () {
+                    console.log('Botón de opciones clickeado');
+                    optionsModal.classList.add('show');
+                    optionsModal.setAttribute('aria-hidden', 'false');
+                });
+            } else {
+                console.error('Botón de opciones o modal de opciones no encontrado.');
+            }
+
+            // Event listener para cerrar el modal de opciones
+            const closeOptionsModal = document.getElementById('close-options-modal');
+            if (closeOptionsModal && optionsModal) {
+                closeOptionsModal.addEventListener('click', function () {
+                    console.log('Cerrar modal de opciones clickeado');
+                    optionsModal.classList.remove('show');
+                    optionsModal.setAttribute('aria-hidden', 'true');
+                });
+            }
+
+            // Event listener para abrir el modal de registro de participantes
+            const openModalButton = document.getElementById('open-modal');
+            const participantModal = document.getElementById('participant-modal');
+            if (openModalButton && participantModal) {
+                openModalButton.addEventListener('click', function () {
+                    console.log('Botón de agregar participantes clickeado');
+                    participantModal.classList.add('show');
+                    participantModal.setAttribute('aria-hidden', 'false');
+                });
+            } else {
+                console.error('Botón de agregar participantes o modal de participante no encontrado.');
+            }
+
+            // Event listener para cerrar el modal de participante
+            const closeParticipantModal = document.getElementById('close-modal');
+            if (closeParticipantModal && participantModal) {
+                closeParticipantModal.addEventListener('click', function () {
+                    console.log('Cerrar modal de participante clickeado');
+                    participantModal.classList.remove('show');
+                    participantModal.setAttribute('aria-hidden', 'true');
+                });
+            }
+
+            // Event listener para cerrar el modal de participantes
+            const closeParticipantsModal = document.getElementById('close-participants-modal');
+            const participantsModal = document.getElementById('participants-modal');
+            if (closeParticipantsModal && participantsModal) {
+                closeParticipantsModal.addEventListener('click', function () {
+                    console.log('Cerrar modal de participantes clickeado');
+                    participantsModal.classList.remove('show');
+                    participantsModal.setAttribute('aria-hidden', 'true');
+                });
             }
         });
-        
-     // Function to view, edit, and delete participants
-function viewParticipants() {
-    const participantList = JSON.parse(localStorage.getItem('participants')) || [];
-    let participantHTML = '<table><thead><tr><th>Nombre</th><th>Correo Electrónico</th><th>Acciones</th></tr></thead><tbody>';
-    participantList.forEach((participant, index) => {
-        participantHTML += `<tr><td>${participant.name}</td><td>${participant.email}</td><td><button class="edit-participant-button" data-index="${index}">Editar</button> <button class="delete-participant-button" data-index="${index}">Eliminar</button></td></tr>`;
-    });
-    participantHTML += '</tbody></table>';
-    const participantsModal = document.getElementById('participants-modal');
-    if (participantsModal) {
-        participantsModal.innerHTML = `
-            <div class="modal-content">
-                <span class="close-participants-modal" id="close-participants-modal">&times;</span>
-                ${participantHTML}
-            </div>
-        `;
-    } else {
-        console.error('No se encontró el modal participants-modal.');
-        return;
-    }
-    participantsModal.style.display = 'flex';
-    participantsModal.setAttribute('aria-hidden', 'false');
-
-    // Attach event listeners for edit and delete buttons dynamically after rendering the participants list
-    document.querySelectorAll('.edit-participant-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            console.log('Edit participant button clicked for index:', index);
-            editParticipant(index);
-        });
-    });
-
-    document.querySelectorAll('.delete-participant-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            console.log('Delete participant button clicked for index:', index);
-            deleteParticipant(index);
-        });
-    });
-
-    // Close participants modal when clicking close icon
-    document.getElementById('close-participants-modal').addEventListener('click', function() {
-        console.log('Close participants modal button clicked');
-        participantsModal.style.display = 'none';
-        participantsModal.setAttribute('aria-hidden', 'true');
-    });
-}
-
-function editParticipant(index) {
-    const participants = JSON.parse(localStorage.getItem('participants'));
-    if (participants && participants[index]) {
-        const participant = participants[index];
-        console.log('Editing participant:', participant);
-        document.getElementById('name').value = participant.name;
-        document.getElementById('email').value = participant.email;
-        
-        // Store the index of the participant being edited
-        document.getElementById('registration-form').setAttribute('data-edit-index', index);
-        
-        // Display the participant modal to edit participant details
-        const participantModal = document.getElementById('participant-modal');
-        if (participantModal) {
-            participantModal.style.display = 'flex';
-            participantModal.setAttribute('aria-hidden', 'false');
-        } else {
-            console.error('No se encontró el modal participant-modal para editar.');
-        }
-    } else {
-        console.error('No se pudo encontrar el participante para editar.');
-    }
-}
-
-function deleteParticipant(index) {
-    const participants = JSON.parse(localStorage.getItem('participants'));
-    if (participants && participants[index]) {
-        console.log('Deleting participant at index:', index);
-        participants.splice(index, 1);
-        localStorage.setItem('participants', JSON.stringify(participants));
-        alert('Participante eliminado exitosamente.');
-        viewParticipants();
-    } else {
-        console.error('No se pudo encontrar el participante para eliminar.');
-    }
-}
-
-// Event listener for the "View Participants" button
-document.getElementById('view-participants-button').addEventListener('click', function() {
-    console.log('View participants button clicked');
-    viewParticipants();
-});
-
-// Close participants modal when clicking outside the modal content
-window.addEventListener('click', function(event) {
-    const participantsModal = document.getElementById('participants-modal');
-    if (event.target == participantsModal) {
-        console.log('Clicked outside participants modal, closing it');
-        participantsModal.style.display = 'none';
-        participantsModal.setAttribute('aria-hidden', 'true');
-    }
-});
-
-// Handle registration form submission to add or edit participant
-document.getElementById('registration-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim().toLowerCase();
-    console.log('Submitting registration form with name:', name, 'email:', email);
-
-    if (name === '' || email === '') {
-        console.log('Validation failed: missing name or email');
-        alert('Por favor, completa todos los campos.');
-        return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        console.log('Validation failed: invalid email format');
-        alert('Por favor, ingresa un correo electrónico válido.');
-        return;
-    }
-
-    const participants = JSON.parse(localStorage.getItem('participants')) || [];
-    const editIndex = this.getAttribute('data-edit-index');
-
-    if (editIndex) {
-        console.log('Updating participant at index:', editIndex);
-        // Update existing participant
-        participants[editIndex] = { name, email };
-        this.removeAttribute('data-edit-index');
-        alert('Participante actualizado exitosamente.');
-    } else {
-        if (participants.some(participant => participant.email === email)) {
-            console.log('Validation failed: email already exists in participants list');
-            alert('Este correo electrónico ya está registrado.');
-            return;
-        }
-        console.log('Adding new participant with name:', name, 'email:', email);
-        participants.push({ name, email });
-        alert('Participante agregado exitosamente.');
-    }
-
-    localStorage.setItem('participants', JSON.stringify(participants));
-    this.reset();
-
-    // Close the participant modal after saving
-    const participantModal = document.getElementById('participant-modal');
-    participantModal.style.display = 'none';
-    participantModal.setAttribute('aria-hidden', 'true');
-});
-
-   // JavaScript to show options modal when options button is clicked
-    document.getElementById('options-button').addEventListener('click', function() {
-        const optionsModal = document.getElementById('options-modal');
-        if (optionsModal.classList.contains('show')) {
-            optionsModal.classList.remove('show');
-            optionsModal.setAttribute('aria-hidden', 'true');
-        } else {
-            optionsModal.classList.add('show');
-            optionsModal.setAttribute('aria-hidden', 'false');
-        }
-    });
-
-    // JavaScript to close the options modal
-    document.getElementById('close-options-modal').addEventListener('click', function() {
-        const optionsModal = document.getElementById('options-modal');
-        optionsModal.classList.remove('show');
-        optionsModal.setAttribute('aria-hidden', 'true');
-    });
-
-    // JavaScript to show countdown adjustment modal
-    document.getElementById('adjust-countdown-button').addEventListener('click', function() {
-        const countdownModal = document.getElementById('countdown-modal');
-        countdownModal.classList.add('show');
-        countdownModal.setAttribute('aria-hidden', 'false');
-    });
-
-    // JavaScript to close the countdown adjustment modal
-    document.getElementById('close-countdown-modal').addEventListener('click', function() {
-        const countdownModal = document.getElementById('countdown-modal');
-        countdownModal.classList.remove('show');
-        countdownModal.setAttribute('aria-hidden', 'true');
-    });
-
-    // JavaScript to show participant registration modal
-    document.getElementById('open-modal').addEventListener('click', function() {
-        const participantModal = document.getElementById('participant-modal');
-        participantModal.classList.add('show');
-        participantModal.setAttribute('aria-hidden', 'false');
-    });
-
-    // JavaScript to close participant registration modal
-    document.getElementById('close-modal').addEventListener('click', function() {
-        const participantModal = document.getElementById('participant-modal');
-        participantModal.classList.remove('show');
-        participantModal.setAttribute('aria-hidden', 'true');
-    });
-
-    // JavaScript to show participants list modal
-    document.getElementById('view-participants-button').addEventListener('click', function() {
-        const participantsModal = document.getElementById('participants-modal');
-        participantsModal.classList.add('show');
-        participantsModal.setAttribute('aria-hidden', 'false');
-    });
-
-    // JavaScript to close participants list modal
-    document.getElementById('close-participants-modal').addEventListener('click', function() {
-        const participantsModal = document.getElementById('participants-modal');
-        participantsModal.classList.remove('show');
-        participantsModal.setAttribute('aria-hidden', 'true');
-    });
     </script>
 </body>
+
 </html>
