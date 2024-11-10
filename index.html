@@ -90,7 +90,7 @@
             justify-content: center;
             position: relative;
             transition: opacity 0.5s ease, transform 0.5s ease;
-            backdrop-filter: blur(10px);
+            /*backdrop-filter: blur(10px);*/
             z-index: 200; /* Mayor que el contenedor de confeti */
         }
 
@@ -102,7 +102,7 @@
 
         /* Estilo del logo */
         .giveaway-logo {
-            background-image: url('https://storage.builderall.com//franquias/2/6377743/editor-html/11770805.jpg');
+            background-image: url('https://proof.builderall.com/user_data/icons/9oIFU6ZzftIXXgU.png');
             background-size: contain;
             background-repeat: no-repeat;
             height: 80px;
@@ -111,6 +111,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius:100px;
         }
 
         /* Línea separadora */
@@ -161,6 +162,38 @@
             font-weight: 700;
             margin-top: 0;
             animation: fadeIn 1.5s ease;
+        }
+
+        /* Descripción del sorteo */
+        .description {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            padding: 0 10px;
+            text-align: center;
+        }
+
+        /* Información sobre el premio */
+        .prize-info {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Reglas del sorteo */
+        .rules {
+            text-align: left;
+            margin: 20px 0;
+            padding: 0 20px;
+            font-size: 0.9em;
+            color: #444;
+        }
+
+        .rules ul {
+            list-style-type: disc;
+            padding-left: 20px;
         }
 
         /* Estilos de la cuenta regresiva */
@@ -427,18 +460,19 @@
         /* Confetti Piece */
         .confetti-piece {
             position: absolute;
-            width: 10px;
-            height: 10px;
             background-color: transparent;
             pointer-events: auto; /* Para detectar el hover */
             animation: fall 5s linear infinite;
             cursor: pointer;
             transition: transform 0.3s ease, background-color 0.3s ease;
+            opacity: 0;
         }
 
         /* Formas de Confeti */
         .confetti-piece.circle {
             border-radius: 50%;
+            width: 8px;
+            height: 8px;
         }
 
         .confetti-piece.triangle {
@@ -451,7 +485,8 @@
         }
 
         .confetti-piece.rectangle {
-            /* Ya está definido como cuadrado, puede permanecer así o ajustar */
+            width: 6px;
+            height: 12px;
         }
 
         /* Animación de caída */
@@ -462,7 +497,7 @@
             }
 
             100% {
-                transform: translateY(100vh) rotate(360deg) translateX(100px);
+                transform: translateY(100vh) rotate(720deg) translateX(100px);
                 opacity: 0;
             }
         }
@@ -475,12 +510,12 @@
             }
 
             50% {
-                transform: translateY(-50px) rotate(720deg) translateX(-50px);
+                transform: translateY(-50px) rotate(1080deg) translateX(-50px);
                 opacity: 1;
             }
 
             100% {
-                transform: translateY(0) rotate(1080deg) translateX(0);
+                transform: translateY(0) rotate(1440deg) translateX(0);
                 opacity: 0;
             }
         }
@@ -640,6 +675,13 @@
         form button:hover {
             background-color: #964eb4;
         }
+
+        /* Desplegable de Participantes */
+        .participants-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
     </style>
 </head>
 
@@ -666,8 +708,28 @@
     <div class="giveaway-container" id="initial-screen">
         <div class="badge" id="badge">Preparado</div>
         <div class="giveaway-logo"></div>
-        <h1>Sorteo</h1>
+        <h1>Acryl Nagels Giveaways</h1>
         <div class="separator"></div>
+        <div class="description">
+            ¡Bienvenido al sorteo de Acryl Nagels! Participa para tener la oportunidad de ganar increíbles premios exclusivos.
+            Para participar, simplemente regístrate con tu nombre y correo electrónico. El sorteo finalizará pronto, ¡así que no pierdas la oportunidad!
+        </div>
+        <div class="prize-info">
+            <strong>Premio:</strong> Kit completo de uñas acrílicas valorado en $150.
+        </div>
+        <div class="rules">
+            <strong>Reglas del Sorteo:</strong>
+            <ul>
+                <li>Solo se permite una participación por persona.</li>
+                <li>Los participantes deben registrar un correo electrónico válido.</li>
+                <li>El sorteo se realizará automáticamente al finalizar el tiempo establecido.</li>
+                <li>El ganador será notificado por correo electrónico.</li>
+                <li>No se aceptan participaciones duplicadas o fraudulentas.</li>
+            </ul>
+        </div>
+        <div class="participants-info">
+            <strong>Participantes Registrados:</strong> <span id="participant-count">0</span>
+        </div>
         <button class="start-button" id="start-button">Iniciar Sorteo</button>
         <button class="options-button" id="options-button">&#9881;</button>
     </div>
@@ -750,6 +812,16 @@
             });
             localStorage.setItem('participants', JSON.stringify(uniqueParticipants));
             console.log('Participantes únicos:', uniqueParticipants);
+
+            // Actualizar contador de participantes en la interfaz
+            function updateParticipantCount() {
+                const countElement = document.getElementById('participant-count');
+                if (countElement) {
+                    countElement.innerText = uniqueParticipants.length;
+                }
+            }
+
+            updateParticipantCount();
 
             // Función para generar colores aleatorios
             function getRandomColor() {
@@ -876,7 +948,7 @@
                     return;
                 }
 
-                const numberOfConfetti = 150; // Aumentado para mayor realismo
+                const numberOfConfetti = 300; // Aumentado para mayor densidad
 
                 for (let i = 0; i < numberOfConfetti; i++) {
                     const confetti = document.createElement('div');
@@ -887,28 +959,31 @@
                     confetti.classList.add(shape);
                     confetti.style.color = getRandomColor(); // Usar 'currentColor' en CSS para formas como triángulos
 
-                    // Tamaño aleatorio
-                    const size = Math.random() * 8 + 4; // Entre 4px y 12px
-                    confetti.style.width = `${size}px`;
-                    confetti.style.height = `${size}px`;
+                    // Tamaño aleatorio (más largos y delgados)
+                    const width = Math.random() * 4 + 2; // Entre 2px y 6px
+                    const height = Math.random() * 12 + 8; // Entre 8px y 20px
+                    confetti.style.width = `${width}px`;
+                    confetti.style.height = `${height}px`;
 
                     // Posición aleatoria
                     confetti.style.left = `${Math.random() * 100}%`;
                     confetti.style.top = `${Math.random() * -100}px`;
-                    confetti.style.opacity = Math.random();
+                    confetti.style.opacity = Math.random() * 0.7 + 0.3; // Entre 0.3 y 1
 
-                    // Animación aleatoria
+                    // Animación aleatoria (más rápida)
                     confetti.style.animationDelay = `${Math.random() * 5}s`;
-                    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                    confetti.style.animationDuration = `${Math.random() * 2 + 3}s`; // Reducido para mayor velocidad
 
-                    // Movimiento horizontal aleatorio
-                    confetti.style.transform = `translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg)`;
+                    // Movimiento horizontal aleatorio (más pronunciado)
+                    const translateX = Math.random() * 100 - 50; // Entre -50px y 50px
+                    const rotateDeg = Math.random() * 720; // Entre 0deg y 720deg
+                    confetti.style.transform = `translateX(${translateX}px) rotate(${rotateDeg}deg)`;
 
                     // Añadir event listener para el hover
                     confetti.addEventListener('mouseover', function () {
                         if (!confetti.classList.contains('hit')) {
                             confetti.classList.add('hit');
-                            // Remover el confetti después de la animación
+                            // Remover el confeti después de la animación
                             confetti.addEventListener('animationend', function () {
                                 confetti.remove();
                             });
@@ -1010,6 +1085,9 @@
                     participants.splice(index, 1);
                     localStorage.setItem('participants', JSON.stringify(participants));
                     alert('Participante eliminado exitosamente.');
+                    // Actualizar la lista de participantes
+                    uniqueParticipants.splice(index, 1);
+                    updateParticipantCount();
                     viewParticipants();
                 } else {
                     console.error('No se pudo encontrar el participante para eliminar.');
@@ -1054,6 +1132,7 @@
                     console.log('Actualizando participante en el índice:', editIndex);
                     // Actualizar participante existente
                     participants[editIndex] = { name, email };
+                    uniqueParticipants[editIndex] = { name, email };
                     this.removeAttribute('data-edit-index');
                     alert('Participante actualizado exitosamente.');
                 } else {
@@ -1064,6 +1143,7 @@
                     }
                     console.log('Agregando nuevo participante con nombre:', name, 'email:', email);
                     participants.push({ name, email });
+                    uniqueParticipants.push({ name, email });
                     alert('Participante agregado exitosamente.');
                 }
 
@@ -1073,6 +1153,7 @@
                 });
 
                 localStorage.setItem('participants', JSON.stringify(participants));
+                updateParticipantCount();
                 this.reset();
 
                 // Cerrar el modal de participante después de guardar
@@ -1149,6 +1230,7 @@
 
                         if (!participants.some(participant => participant.email === email)) {
                             participants.push({ name, email });
+                            uniqueParticipants.push({ name, email });
                             importados++;
                         } else {
                             console.log(`Fila ${i + 1}: el correo ${email} ya está registrado. Se omite.`);
@@ -1161,6 +1243,7 @@
                     });
 
                     localStorage.setItem('participants', JSON.stringify(participants));
+                    updateParticipantCount();
 
                     alert(`${importados} participantes importados exitosamente.`);
                     console.log(`${importados} participantes importados.`);
