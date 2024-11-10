@@ -82,7 +82,7 @@
             padding: 20px 10px;
             border-radius: 50px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -105,13 +105,13 @@
             background-image: url('https://proof.builderall.com/user_data/icons/9oIFU6ZzftIXXgU.png');
             background-size: contain;
             background-repeat: no-repeat;
-            height: 80px;
-            width: 80px;
+            height: 50px;
+            width: 50px;
             margin-bottom: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius:100px;
+            border-radius:25px;
         }
 
         /* Línea separadora */
@@ -593,7 +593,7 @@
         }
 
         .modal-content {
-            max-width: 500px;
+            max-width: 600px;
             margin: auto;
             padding: 30px;
             background: linear-gradient(135deg, #ffffff, #f0f0f5);
@@ -602,6 +602,8 @@
             backdrop-filter: blur(10px);
             z-index: 1100;
             position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .close-modal,
@@ -653,12 +655,15 @@
             font-weight: bold;
         }
 
-        form input {
+        form input,
+        form textarea,
+        form select {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
+            resize: vertical;
         }
 
         form button {
@@ -708,16 +713,15 @@
     <div class="giveaway-container" id="initial-screen">
         <div class="badge" id="badge">Preparado</div>
         <div class="giveaway-logo"></div>
-        <h1>Acryl Nagels Giveaways</h1>
-        <div class="separator"></div>
-        <div class="description">
+<h1>Acryl Nagels Giveaways</h1>        <div class="separator"></div>
+        <div class="description" id="description">
             ¡Bienvenido al sorteo de Acryl Nagels! Participa para tener la oportunidad de ganar increíbles premios exclusivos.
             Para participar, simplemente regístrate con tu nombre y correo electrónico. El sorteo finalizará pronto, ¡así que no pierdas la oportunidad!
         </div>
-        <div class="prize-info">
+        <div class="prize-info" id="prize-info">
             <strong>Premio:</strong> Kit completo de uñas acrílicas valorado en $150.
         </div>
-        <div class="rules">
+        <div class="rules" id="rules">
             <strong>Reglas del Sorteo:</strong>
             <ul>
                 <li>Solo se permite una participación por persona.</li>
@@ -729,6 +733,25 @@
         </div>
         <div class="participants-info">
             <strong>Participantes Registrados:</strong> <span id="participant-count">0</span>
+        </div>
+        <!-- Contador regresivo -->
+        <div id="countdown" style="display: none;">
+            <div>
+                <span id="days">00</span>
+                <div>Días</div>
+            </div>
+            <div>
+                <span id="hours">00</span>
+                <div>Horas</div>
+            </div>
+            <div>
+                <span id="minutes">00</span>
+                <div>Minutos</div>
+            </div>
+            <div>
+                <span id="seconds">00</span>
+                <div>Segundos</div>
+            </div>
         </div>
         <button class="start-button" id="start-button">Iniciar Sorteo</button>
         <button class="options-button" id="options-button">&#9881;</button>
@@ -761,10 +784,45 @@
             <span class="close-options-modal" id="close-options-modal">&times;</span>
             <h2 id="options-modal-title">Opciones</h2>
             <div class="separator"></div>
-            <button id="adjust-countdown-button">Ajustar Contador</button>
+
+            <!-- Formulario para personalizar textos -->
+            <form id="text-customization-form">
+                <h3>Personalizar Textos</h3>
+                <label for="custom-description">Descripción del Sorteo:</label>
+                <textarea id="custom-description" name="custom-description" rows="3" required></textarea>
+
+                <label for="custom-prize">Información del Premio:</label>
+                <input type="text" id="custom-prize" name="custom-prize" required>
+
+                <label for="custom-rules">Reglas del Sorteo:</label>
+                <textarea id="custom-rules" name="custom-rules" rows="4" required></textarea>
+
+                <button type="submit">Guardar Textos</button>
+            </form>
+
+            <div class="separator"></div>
+
+            <!-- Formulario para configurar el contador -->
+            <form id="countdown-form">
+                <h3>Configuración del Contador</h3>
+                <label for="enable-countdown">Activar Contador:</label>
+                <select id="enable-countdown" name="enable-countdown">
+                    <option value="false">No</option>
+                    <option value="true">Sí</option>
+                </select>
+
+                <div id="countdown-settings" style="display: none;">
+                    <label for="countdown-date">Fecha y Hora de Finalización:</label>
+                    <input type="datetime-local" id="countdown-date" name="countdown-date">
+
+                    <button type="submit">Iniciar Contador</button>
+                </div>
+            </form>
+
+            <div class="separator"></div>
+
             <button id="open-modal">Agregar Participantes</button>
             <button id="view-participants-button">Ver Participantes</button>
-            <div class="separator"></div>
             <label for="import-participants-button">Importar Participantes (CSV):</label>
             <input type="file" id="import-participants-button" accept=".csv">
         </div>
@@ -839,9 +897,20 @@
                 return shapes[Math.floor(Math.random() * shapes.length)];
             }
 
+            // Variables para el contador
+            let countdownInterval = null;
+            let countdownEndTime = null;
+
             // Función para iniciar el sorteo
             function initiateGiveaway() {
                 console.log('Iniciando sorteo');
+
+                // Si hay un contador activo, limpiarlo
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+
                 document.getElementById('loading-indicator').style.display = 'block';
                 const badge = document.getElementById('badge');
                 badge.innerText = 'En proceso';
@@ -861,6 +930,12 @@
                     initialScreen.style.display = 'none';
                     giveawayScreen.style.display = 'block';
                     winnerAnnouncement.style.display = 'none';
+                }
+
+                // Ocultar el contador
+                const countdownElement = document.getElementById('countdown');
+                if (countdownElement) {
+                    countdownElement.style.display = 'none';
                 }
 
                 // Verificar si hay participantes para el sorteo
@@ -1083,11 +1158,10 @@
                 if (participants && participants[index]) {
                     console.log('Eliminando participante en el índice:', index);
                     participants.splice(index, 1);
+                    uniqueParticipants.splice(index, 1); // Actualizar la lista única
                     localStorage.setItem('participants', JSON.stringify(participants));
                     alert('Participante eliminado exitosamente.');
-                    // Actualizar la lista de participantes
-                    uniqueParticipants.splice(index, 1);
-                    updateParticipantCount();
+                    updateParticipantCount(); // Actualizar contador
                     viewParticipants();
                 } else {
                     console.error('No se pudo encontrar el participante para eliminar.');
@@ -1328,6 +1402,189 @@
                     participantsModal.classList.remove('show');
                     participantsModal.setAttribute('aria-hidden', 'true');
                 });
+            }
+
+            // Manejar la personalización de textos
+            const textCustomizationForm = document.getElementById('text-customization-form');
+            if (textCustomizationForm) {
+                textCustomizationForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const customDescription = document.getElementById('custom-description').value.trim();
+                    const customPrize = document.getElementById('custom-prize').value.trim();
+                    const customRules = document.getElementById('custom-rules').value.trim();
+
+                    if (customDescription === '' || customPrize === '' || customRules === '') {
+                        alert('Por favor, completa todos los campos de personalización.');
+                        return;
+                    }
+
+                    // Actualizar la interfaz con los textos personalizados
+                    document.getElementById('description').innerText = customDescription;
+                    document.getElementById('prize-info').innerHTML = `<strong>Premio:</strong> ${customPrize}`;
+                    document.getElementById('rules').innerHTML = `<strong>Reglas del Sorteo:</strong> <ul>${customRules.split('\n').map(rule => `<li>${rule}</li>`).join('')}</ul>`;
+
+                    // Guardar en localStorage
+                    localStorage.setItem('customDescription', customDescription);
+                    localStorage.setItem('customPrize', customPrize);
+                    localStorage.setItem('customRules', customRules);
+
+                    alert('Textos personalizados guardados exitosamente.');
+
+                    // Cerrar el modal
+                    optionsModal.classList.remove('show');
+                    optionsModal.setAttribute('aria-hidden', 'true');
+                });
+
+                // Cargar textos personalizados al iniciar
+                const savedDescription = localStorage.getItem('customDescription');
+                const savedPrize = localStorage.getItem('customPrize');
+                const savedRules = localStorage.getItem('customRules');
+
+                if (savedDescription) {
+                    document.getElementById('description').innerText = savedDescription;
+                    document.getElementById('custom-description').value = savedDescription;
+                }
+
+                if (savedPrize) {
+                    document.getElementById('prize-info').innerHTML = `<strong>Premio:</strong> ${savedPrize}`;
+                    document.getElementById('custom-prize').value = savedPrize;
+                }
+
+                if (savedRules) {
+                    document.getElementById('rules').innerHTML = `<strong>Reglas del Sorteo:</strong> <ul>${savedRules.split('\n').map(rule => `<li>${rule}</li>`).join('')}</ul>`;
+                    document.getElementById('custom-rules').value = savedRules;
+                }
+            }
+
+            // Manejar la configuración del contador
+            const countdownForm = document.getElementById('countdown-form');
+            const enableCountdownSelect = document.getElementById('enable-countdown');
+            const countdownSettings = document.getElementById('countdown-settings');
+
+            if (enableCountdownSelect) {
+                enableCountdownSelect.addEventListener('change', function () {
+                    if (this.value === 'true') {
+                        countdownSettings.style.display = 'block';
+                    } else {
+                        countdownSettings.style.display = 'none';
+                        // Limpiar cualquier configuración previa del contador
+                        if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                        }
+                        document.getElementById('countdown').style.display = 'none';
+                        localStorage.removeItem('countdownEnabled');
+                        localStorage.removeItem('countdownEndTime');
+                    }
+                });
+
+                // Cargar configuración previa del contador
+                const countdownEnabled = localStorage.getItem('countdownEnabled');
+                const countdownEndTimeStored = localStorage.getItem('countdownEndTime');
+
+                if (countdownEnabled === 'true') {
+                    enableCountdownSelect.value = 'true';
+                    countdownSettings.style.display = 'block';
+                    if (countdownEndTimeStored) {
+                        countdownEndTime = new Date(countdownEndTimeStored);
+                        document.getElementById('countdown-date').value = countdownEndTime.toISOString().slice(0, 16);
+                        startCountdown();
+                    }
+                } else {
+                    enableCountdownSelect.value = 'false';
+                    countdownSettings.style.display = 'none';
+                }
+            }
+
+            if (countdownForm) {
+                countdownForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const enableCountdown = document.getElementById('enable-countdown').value === 'true';
+                    const countdownDateInput = document.getElementById('countdown-date').value;
+
+                    if (enableCountdown) {
+                        if (!countdownDateInput) {
+                            alert('Por favor, selecciona una fecha y hora de finalización.');
+                            return;
+                        }
+
+                        countdownEndTime = new Date(countdownDateInput);
+                        if (isNaN(countdownEndTime.getTime())) {
+                            alert('Por favor, ingresa una fecha y hora válidas.');
+                            return;
+                        }
+
+                        // Guardar en localStorage
+                        localStorage.setItem('countdownEnabled', 'true');
+                        localStorage.setItem('countdownEndTime', countdownEndTime.toISOString());
+
+                        // Mostrar el contador y comenzar
+                        document.getElementById('countdown').style.display = 'grid';
+                        startCountdown();
+
+                        alert('Contador configurado exitosamente.');
+
+                        // Cerrar el modal
+                        optionsModal.classList.remove('show');
+                        optionsModal.setAttribute('aria-hidden', 'true');
+                    }
+                });
+            }
+
+            // Función para iniciar el contador regresivo
+            function startCountdown() {
+                const countdownElement = document.getElementById('countdown');
+                if (!countdownElement || !countdownEndTime) return;
+
+                function updateCountdown() {
+                    const now = new Date().getTime();
+                    const distance = countdownEndTime.getTime() - now;
+
+                    if (distance < 0) {
+                        clearInterval(countdownInterval);
+                        countdownInterval = null;
+                        countdownElement.style.display = 'none';
+                        initiateGiveaway();
+                        return;
+                    }
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById('days').innerText = days.toString().padStart(2, '0');
+                    document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+                    document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+                    document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+                }
+
+                updateCountdown(); // Llamar inmediatamente para evitar el retardo
+                countdownInterval = setInterval(updateCountdown, 1000);
+            }
+
+            // Cargar el contador si está habilitado
+            if (localStorage.getItem('countdownEnabled') === 'true' && localStorage.getItem('countdownEndTime')) {
+                countdownEndTime = new Date(localStorage.getItem('countdownEndTime'));
+                document.getElementById('countdown').style.display = 'grid';
+                startCountdown();
+            }
+
+            // Manejar la personalización de textos al cargar la página
+            const savedDescription = localStorage.getItem('customDescription');
+            const savedPrize = localStorage.getItem('customPrize');
+            const savedRules = localStorage.getItem('customRules');
+
+            if (savedDescription) {
+                document.getElementById('description').innerText = savedDescription;
+            }
+
+            if (savedPrize) {
+                document.getElementById('prize-info').innerHTML = `<strong>Premio:</strong> ${savedPrize}`;
+            }
+
+            if (savedRules) {
+                document.getElementById('rules').innerHTML = `<strong>Reglas del Sorteo:</strong> <ul>${savedRules.split('\n').map(rule => `<li>${rule}</li>`).join('')}</ul>`;
             }
         });
     </script>
