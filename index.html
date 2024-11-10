@@ -339,17 +339,17 @@ h1 {
 .spinner-container {
     font-size: 0.9em;
     color: #333;
-    margin-bottom: 20px;
-    height: 3em;
+    height: 5em;
     overflow: hidden;
-    position: relative;
+    position: absolute;
     border: 3px solid #b05acb;
     border-radius: 15px;
-    padding: 10px;
-    width: 90%;
+    padding: 12px;
+    width: 85%;
     background: #f3e5f5;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     z-index: 200;
+    margin-left: 17px;
 }
 
 .spinner {
@@ -581,13 +581,16 @@ h1 {
         width: 100%;
     }
 
-    .modal-content {
-        padding: 5px;
-        height: 402px;
-        display: grid;
-        margin-top: 26px;
-        align-content: center;
-    }
+.modal-content {
+    /* max-width: 400px; */
+    margin: auto;
+    padding: 20px;
+    /* background: #fff; */
+    /* border-radius: 10px; */
+    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+    z-index: 400;
+    display: grid;
+}
 
    .modal-content button {
         font-size: 16px;
