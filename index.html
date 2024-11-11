@@ -102,16 +102,15 @@
 
         /* Estilo del logo */
         .giveaway-logo {
-            background-image: url('https://proof.builderall.com/user_data/icons/9oIFU6ZzftIXXgU.png');
+            background-image: url('https://storage.builderall.com//franquias/2/6377743/editor-html/11770805.jpg');
             background-size: contain;
             background-repeat: no-repeat;
-            height: 70px;
-            width: 70px;
+            height: 80px;
+            width: 80px;
             margin-bottom: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius:25px;
         }
 
         /* Línea separadora */
@@ -200,14 +199,20 @@
         #countdown {
             font-size: 1.2em;
             color: #b05acb;
+            margin-top: 15px; /* Espaciado superior */
             margin-bottom: 20px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 10px;
             justify-content: space-between;
             align-items: center;
-            visibility: hidden;
+            visibility: hidden; /* Inicialmente oculto */
             width: 100%;
+            background-color: rgba(176, 92, 203, 0.1); /* Fondo sutil */
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para mejor visibilidad */
+            transition: opacity 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
         }
 
         #countdown div {
@@ -690,23 +695,72 @@
 
         /* Botón para iniciar un nuevo sorteo */
         .new-giveaway-button {
-    background: #f3f3f3;
-    /* color: white; */
-    /* padding: 10px 20px; */
-    margin-top: 20px;
-    border: none;
-    border-radius: 5px;
-    /* font-size: 1em; */
-    /* cursor: pointer; */
-    /* transition: background-color 0.3s ease; */
-}
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
         .new-giveaway-button:hover {
-            background-color: ##f3f3f3;
+            background-color: #45a049;
         }
 
         .new-giveaway-button.hidden {
             display: none;
+        }
+
+        /* Estilos Mejorados para Botón de Cargar CSV */
+        #import-participants-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #b05acb;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #import-participants-button:hover {
+            background-color: #964eb4;
+        }
+
+        /* Estilos Mejorados para los Formularios en el Modal de Opciones */
+        #text-customization-form,
+        #countdown-form {
+            margin-bottom: 20px;
+        }
+
+        #countdown-settings {
+            margin-top: 10px;
+        }
+
+        /* Estilos Mejorados para Botones dentro del Modal de Opciones */
+        #open-modal,
+        #view-participants-button {
+            background-color: #b05acb;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        #open-modal:hover,
+        #view-participants-button:hover {
+            background-color: #964eb4;
         }
     </style>
 </head>
@@ -734,7 +788,26 @@
     <div class="giveaway-container" id="initial-screen">
         <div class="badge" id="badge">Preparado</div>
         <div class="giveaway-logo"></div>
-        <h1>Acryl Nagels - Giveaways</h1>
+        <h1>Sorteo</h1>
+        <!-- Contador regresivo movido debajo del h1 -->
+        <div id="countdown" style="display: none;">
+            <div>
+                <span id="days">00</span>
+                <div>Días</div>
+            </div>
+            <div>
+                <span id="hours">00</span>
+                <div>Horas</div>
+            </div>
+            <div>
+                <span id="minutes">00</span>
+                <div>Minutos</div>
+            </div>
+            <div>
+                <span id="seconds">00</span>
+                <div>Segundos</div>
+            </div>
+        </div>
         <div class="separator"></div>
         <div class="description" id="description">
             ¡Bienvenido al sorteo de Acryl Nagels! Participa para tener la oportunidad de ganar increíbles premios exclusivos.
@@ -755,25 +828,6 @@
         </div>
         <div class="participants-info">
             <strong>Participantes Registrados:</strong> <span id="participant-count">0</span>
-        </div>
-        <!-- Contador regresivo -->
-        <div id="countdown" style="display: none;">
-            <div>
-                <span id="days">00</span>
-                <div>Días</div>
-            </div>
-            <div>
-                <span id="hours">00</span>
-                <div>Horas</div>
-            </div>
-            <div>
-                <span id="minutes">00</span>
-                <div>Minutos</div>
-            </div>
-            <div>
-                <span id="seconds">00</span>
-                <div>Segundos</div>
-            </div>
         </div>
         <button class="start-button" id="start-button">Iniciar Sorteo</button>
         <button class="options-button" id="options-button">&#9881;</button>
@@ -960,6 +1014,7 @@
                 const countdownElement = document.getElementById('countdown');
                 if (countdownElement) {
                     countdownElement.style.display = 'none';
+                    countdownElement.style.visibility = 'hidden';
                 }
 
                 // Verificar si hay participantes para el sorteo
@@ -970,7 +1025,7 @@
                     badge.innerText = 'Preparado';
                     badge.style.backgroundColor = '#b07df4';
                     giveawayScreen.style.display = 'none';
-                    initialScreen.style.display = 'block';
+                    initialScreen.style.display = 'flex';
                     return;
                 }
 
@@ -1502,7 +1557,9 @@
                             clearInterval(countdownInterval);
                             countdownInterval = null;
                         }
-                        document.getElementById('countdown').style.display = 'none';
+                        const countdownElement = document.getElementById('countdown');
+                        countdownElement.style.display = 'none';
+                        countdownElement.style.visibility = 'hidden';
                         localStorage.removeItem('countdownEnabled');
                         localStorage.removeItem('countdownEndTime');
                     }
@@ -1549,7 +1606,9 @@
                         localStorage.setItem('countdownEndTime', countdownEndTime.toISOString());
 
                         // Mostrar el contador y comenzar
-                        document.getElementById('countdown').style.display = 'grid';
+                        const countdownElement = document.getElementById('countdown');
+                        countdownElement.style.display = 'grid';
+                        countdownElement.style.visibility = 'visible';
                         startCountdown();
 
                         alert('Contador configurado exitosamente.');
@@ -1574,6 +1633,7 @@
                         clearInterval(countdownInterval);
                         countdownInterval = null;
                         countdownElement.style.display = 'none';
+                        countdownElement.style.visibility = 'hidden';
                         initiateGiveaway();
                         return;
                     }
@@ -1596,7 +1656,9 @@
             // Cargar el contador si está habilitado
             if (localStorage.getItem('countdownEnabled') === 'true' && localStorage.getItem('countdownEndTime')) {
                 countdownEndTime = new Date(localStorage.getItem('countdownEndTime'));
-                document.getElementById('countdown').style.display = 'grid';
+                const countdownElement = document.getElementById('countdown');
+                countdownElement.style.display = 'grid';
+                countdownElement.style.visibility = 'visible';
                 startCountdown();
             }
 
@@ -1685,7 +1747,9 @@
                     localStorage.removeItem('countdownEndTime');
                     enableCountdownSelect.value = 'false';
                     countdownSettings.style.display = 'none';
-                    document.getElementById('countdown').style.display = 'none';
+                    const countdownElement = document.getElementById('countdown');
+                    countdownElement.style.display = 'none';
+                    countdownElement.style.visibility = 'hidden';
                 });
             }
 
@@ -1694,4 +1758,3 @@
 </body>
 
 </html>
-
