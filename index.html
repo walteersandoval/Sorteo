@@ -19,20 +19,20 @@
             font-family: 'Inter', sans-serif;
         }
 
-     body {
-    background: #f9f9fa;
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease;
-    flex-direction: column-reverse;
-    flex-wrap: nowrap;
-    position: relative;
-    /* overflow: hidden; */
-    width: 100%;
-}
+        body {
+            background: #f9f9fa;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            flex-direction: column-reverse;
+            flex-wrap: nowrap;
+            position: relative;
+            /* overflow: hidden; */
+            width: 100%;
+        }
 
         *,
         .start-button,
@@ -102,7 +102,7 @@
 
         /* Estilo del logo */
         .giveaway-logo {
-            background-image: url('https://storage.builderall.com//franquias/2/6377743/editor-html/11770805.jpg');
+            background-image: url('https://proof.builderall.com/user_data/icons/9oIFU6ZzftIXXgU.png');
             background-size: contain;
             background-repeat: no-repeat;
             height: 80px;
@@ -111,6 +111,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius:25px;
+            
         }
 
         /* Línea separadora */
@@ -207,8 +209,8 @@
             justify-content: space-between;
             align-items: center;
             visibility: hidden; /* Inicialmente oculto */
-            width: 100%;
-            background-color: rgba(176, 92, 203, 0.1); /* Fondo sutil */
+            width: 80%;
+            background-color: rgb(176 92 203 / 0%);; /* Fondo sutil */
             border-radius: 10px;
             padding: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para mejor visibilidad */
@@ -715,7 +717,7 @@
         }
 
         /* Estilos Mejorados para Botón de Cargar CSV */
-        #import-participants-button {
+        .custom-file-upload {
             display: inline-block;
             padding: 10px 20px;
             margin-top: 10px;
@@ -724,13 +726,22 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
             font-weight: bold;
             text-align: center;
         }
 
-        #import-participants-button:hover {
+        .custom-file-upload:hover {
             background-color: #964eb4;
+            transform: scale(1.05);
+        }
+
+        /* Estilo Opcional para Mostrar el Nombre del Archivo Seleccionado */
+        .file-name {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
         }
 
         /* Estilos Mejorados para los Formularios en el Modal de Opciones */
@@ -788,7 +799,7 @@
     <div class="giveaway-container" id="initial-screen">
         <div class="badge" id="badge">Preparado</div>
         <div class="giveaway-logo"></div>
-        <h1>Sorteo</h1>
+        <h1>¡Acryl Nagels! - Giveaway</h1>
         <!-- Contador regresivo movido debajo del h1 -->
         <div id="countdown" style="display: none;">
             <div>
@@ -901,8 +912,13 @@
 
             <button id="open-modal">Agregar Participantes</button>
             <button id="view-participants-button">Ver Participantes</button>
-            <label for="import-participants-button">Importar Participantes (CSV):</label>
-            <input type="file" id="import-participants-button" accept=".csv">
+
+            <!-- Etiqueta personalizada para el input de archivo -->
+            <label for="import-participants-button" class="custom-file-upload">
+                Importar Participantes (CSV)
+            </label>
+            <input type="file" id="import-participants-button" accept=".csv" style="display: none;">
+            <span id="file-name" class="file-name"></span>
         </div>
     </div>
 
@@ -1750,6 +1766,20 @@
                     const countdownElement = document.getElementById('countdown');
                     countdownElement.style.display = 'none';
                     countdownElement.style.visibility = 'hidden';
+                });
+            }
+
+            // Mostrar el nombre del archivo seleccionado (Opcional)
+            const fileNameSpan = document.getElementById('file-name');
+
+            if (importButton && fileNameSpan) {
+                importButton.addEventListener('change', function (event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        fileNameSpan.textContent = `Archivo seleccionado: ${file.name}`;
+                    } else {
+                        fileNameSpan.textContent = '';
+                    }
                 });
             }
 
